@@ -4,15 +4,26 @@
 /**
  * 层级选择组件模式
  */
-export const CascadeSelectorType = {
+export const TreeSelectorModel = {
     /**
-     * 只有选到最后一级才算选择完成
+     * 多选，只有到最后一级
      */
-    last: 0,
+    multiSelectToEnd: "multiSelectToEnd",
+
     /**
-     * 任何层级都可以选择
+     * 每一级都可以多选
      */
-    any: 1,
+    multiSelectEvery: "multiSelectEvery",
+
+    /**
+     * 单选，只有到最后一级
+     */
+    singleSelectToEnd: "singleSelectToEnd",
+
+    /**
+     * 每一级都可以单选
+     */
+    singleSelectEvery: "singleSelectEvery",
 }
 
 

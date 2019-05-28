@@ -41,7 +41,9 @@
     "semantic-release": "^15.13.3"
   },
   "dependencies": {
-    "react-native-gesture-handler": "^1.1.0"
+    "react-native-gesture-handler": "^1.1.0",
+    "object-path": "^0.11.4",
+    "immutability-helper": "^3"
   },
   "config": {
     "commitizen": {

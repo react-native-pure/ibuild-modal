@@ -13,12 +13,14 @@ import {
     StyleSheet,
     TouchableWithoutFeedback,
     Dimensions,
-    Platform
+    Platform,
+    SafeAreaView
 } from "react-native"
-import {TransitionType} from "../config/Enums";
+import {TransitionType} from "../../config/Enums";
 import NavigationHeader from "./NavigationHeader";
-import {HeaderColor} from "../config/DefaultTheme";
+import {HeaderColor} from "../../config/DefaultTheme";
 import {PanGestureHandler} from 'react-native-gesture-handler';
+import {PageModalProps} from "../../config/TreeModalTypes";
 
 const deviceSize = Dimensions.get('window')
 
@@ -35,22 +37,10 @@ const deviceSize = Dimensions.get('window')
  * @property enabledGesture - 是否支持滑动关闭手势
  *
  */
-type PageModalProps = {
-    visible: boolean,
-    onRequestClose: Function,
-    onShown?: Function,
-    onHidden?: Function,
-    children?: any,
-    title?: string,
-    transition?: $Values<typeof TransitionType>,
-    hiddenNavBar?: boolean,
-    enabledGesture?: boolean,
 
-
-    renderNavBar?:()=>React.createElement()
-};
 
 export default class PageModal extends PureComponent<PageModalProps> {
+
     static defaultProps = {
         visible: false,
         transition: TransitionType.horizontal,
@@ -117,7 +107,7 @@ export default class PageModal extends PureComponent<PageModalProps> {
         }
     }
 
-    show(duration = this._duration,fromOrg=true) {
+    show(duration = this._duration, fromOrg = true) {
         if (!this._mounted) {
             return
         }
@@ -125,7 +115,7 @@ export default class PageModal extends PureComponent<PageModalProps> {
             visible: true,
             contentVisible: true
         }, () => {
-            if(fromOrg){
+            if (fromOrg) {
                 this.state.translateY.setValue(this.hiddenTranslateY(this.props))
                 this.state.translateX.setValue(this.hiddenTranslateX(this.props))
             }
@@ -220,33 +210,28 @@ export default class PageModal extends PureComponent<PageModalProps> {
         if (!this.state.enabledGesture) {
             return
         }
-        const {state,translationX,velocityX} = nativeEvent;
+        const {state, translationX, velocityX} = nativeEvent;
         if (state === 5) {
-            if (velocityX>0) {
+            if (velocityX > 0) {
                 this.props.onRequestClose && this.props.onRequestClose()
-            }
-            else {
+            } else {
                 let time = deviceSize.width / this._duration * (deviceSize.width - translationX)
-                this.show(time,false)
+                this.show(time, false)
             }
         }
     }
 
     renderNavBar() {
-        return <NavigationHeader title={this.props.title}
-                                 renderLeftButtons={() => {
-                                     return (
-                                         <TouchableWithoutFeedback onPress={() => {
-                                             this.props.onRequestClose && this.props.onRequestClose()
-                                         }}>
-                                             <View style={styles.backView}>
-                                                 <Image
-                                                     style={styles.back}
-                                                     source={require("../assets/back-icon/back-icon.png")}></Image>
-                                             </View>
-                                         </TouchableWithoutFeedback>
-                                     )
-                                 }}/>
+        const {onPressLeft, onRequestClose, renderNavBar, ...props} = this.props
+        if (renderNavBar) {
+            return renderNavBar()
+        }
+        return <NavigationHeader  {...props}
+                                  onPressLeft={() => {
+            onPressLeft && onPressLeft()
+            onRequestClose && onRequestClose()
+        }}
+                                />
     }
 
     render() {

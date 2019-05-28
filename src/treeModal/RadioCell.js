@@ -3,18 +3,13 @@
  * @author heykk
  */
 
-/**
- * Created by yzw on 2018/3/28.
- */
-
 import React from 'react'
-import BaseComponent from '../BaseComponent'
 import {View, TouchableOpacity, StyleSheet, Text,Image} from 'react-native'
 import PropTypes from 'prop-types'
-import {MainBuleColor} from '../config/DefaultTheme'
-import {CascadeSelectorType} from "../config/Enums";
+import {MainBuleColor} from '../../config/DefaultTheme'
+import {TreeSelectorModel} from "../..//config/Enums";
 
-export default class RadioCell extends BaseComponent {
+export default class RadioCell extends React.Component {
     static propTypes = {
         onCellPress: PropTypes.func,
         onNextPress: PropTypes.func,
@@ -26,14 +21,14 @@ export default class RadioCell extends BaseComponent {
         showRadio: PropTypes.bool,
         showArrow: PropTypes.bool,
         textStyle: PropTypes.object,
-        type: PropTypes.number, // 0 cell左右均为往下级选择的操作，1 cell左边为选中，右边为往下级选的操作
+        model:PropTypes.string,
 
     };
     static defaultProps = {
         onCellPress: () => null,
         readOnly: false,
         value: "",
-        model: 0,
+        model: TreeSelectorModel.singleSelectToEnd,
         textStyle: {}
     };
 
@@ -50,11 +45,21 @@ export default class RadioCell extends BaseComponent {
         return '#ccc'
     }
 
-
     render() {
 
         return (
             <View style={[style.box, this.props.style]}>
+                {this.props.showRadio && <TouchableOpacity activeOpacity={1}
+                                                           onPress={() => {
+                                                               this.props.onRadioPress(this.props.data)
+                                                           }}
+                                                           style={{
+                                                               paddingLeft: 5,
+                                                               paddingVertical: 15
+                                                           }}>
+                     <Image style={{width:25,height:25,tintColor: this.props.selected ?this.selectTintColor:this.tintColor}}
+                                                    source={this.props.selected ?require('../../assets/checkbox-blank-circle.png'):require("../../assets/checkbox-blank-circle-outline.png")}/>
+                </TouchableOpacity>}
                 <TouchableOpacity activeOpacity={1}
                                   style={{
                                       flex: 1,
@@ -69,22 +74,10 @@ export default class RadioCell extends BaseComponent {
                 </TouchableOpacity>
 
                 <View style={{flexDirection: 'row'}}>
-                    {this.props.showRadio && <TouchableOpacity activeOpacity={1}
-                                                               onPress={() => {
-                                                                   this.props.onRadioPress(this.props.data)
-                                                               }}
-                                                               style={{
-                                                                   paddingLeft: 5,
-                                                                   paddingVertical: 15
-                                                               }}>
-
-
-                        {this.props.showRadio && <Image style={{width:30,height:30,paddingRight: 10,tintColor: this.props.selected ?this.selectTintColor:this.tintColor}}
-                                                        source={this.props.selected ?require('../assets/checkbox-blank-circle.png'):require("../assets/checkbox-blank-circle-outline.png")}/>}
-                    </TouchableOpacity>}
                     {this.props.showArrow && <TouchableOpacity activeOpacity={1}
                                                                onPress={() => {
-                                                                   if (this.props.type == CascadeSelectorType.any) {
+                                                                   if (this.props.model == TreeSelectorModel.singleSelectEvery ||
+                                                                       this.props.model == TreeSelectorModel.multiSelectEvery ) {
                                                                        this.props.onNextPress(this.props.data)
                                                                    }
                                                                    else {
@@ -97,12 +90,13 @@ export default class RadioCell extends BaseComponent {
                                                                }}>
 
                         <View style={{flexDirection: "row", alignItems: 'center', justifyContent: 'center'}}>
-                            {this.props.type == CascadeSelectorType.any && <View style={{
+                            {(this.props.model == TreeSelectorModel.singleSelectEvery || this.props.model == TreeSelectorModel.multiSelectEvery ) && <View style={{
                                 height: 15,
-                                width: 1,
-                                backgroundColor: '#ccc'
+                                width: 1.5,
+                                backgroundColor: this.tintColor,
+                                marginRight:8
                             }}/>}
-                            <Image  style={{tintColor:this.tintColor,width:30,height:30,marginTop: 2}} source={require('../assets/chevron-right.png')}/>
+                            <Image  style={{tintColor:this.tintColor,width:8,height:13,marginTop: 2,marginRight:12}} source={require('../../assets/chevron-right.png')}/>
                         </View>
                     </TouchableOpacity>}
                 </View>
