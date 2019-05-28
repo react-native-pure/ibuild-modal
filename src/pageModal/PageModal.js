@@ -7,14 +7,10 @@
 import React, {PureComponent} from "react"
 import {
     Animated,
-    View,
-    Image,
     Modal,
     StyleSheet,
-    TouchableWithoutFeedback,
     Dimensions,
     Platform,
-    SafeAreaView
 } from "react-native"
 import {TransitionType} from "../../config/Enums";
 import NavigationHeader from "./NavigationHeader";

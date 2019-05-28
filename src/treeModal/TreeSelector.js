@@ -23,12 +23,12 @@ import {
     Alert,
     ActivityIndicator
 } from 'react-native'
-import PropTypes from 'prop-types'
 import {BorderColor, MainBuleColor} from '../../config/DefaultTheme'
 import RadioCell from './RadioCell';
 import ProjectStorage from "../../storage/LocalStorage";
 import {TreeSelectorModel} from "../../config/Enums";
 import update from "immutability-helper/index";
+import {TreeSelectorProps} from '../../config/TreeModalTypes'
 
 const DEVICE_SIZE = Dimensions.get("window");
 

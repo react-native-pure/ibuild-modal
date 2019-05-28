@@ -4,7 +4,7 @@
  */
 
 import React, {PureComponent} from "react"
-import {View, Text, StyleSheet, TouchableWithoutFeedback, Platform, Image,SafeAreaView} from "react-native"
+import {View, Text, StyleSheet, Image} from "react-native"
 
 export default class EmptyView extends PureComponent{
 
