@@ -13,7 +13,7 @@ export const TreeSelectorModel = {
     /**
      * 每一级都可以多选
      */
-    multiSelectEvery: "multiSelectEvery",
+    multiSelectAny: "multiSelectAny",
 
     /**
      * 单选，只有到最后一级
@@ -23,7 +23,7 @@ export const TreeSelectorModel = {
     /**
      * 每一级都可以单选
      */
-    singleSelectEvery: "singleSelectEvery",
+    singleSelectAny: "singleSelectAny",
 }
 
 

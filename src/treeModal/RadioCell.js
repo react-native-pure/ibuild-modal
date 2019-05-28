@@ -76,8 +76,8 @@ export default class RadioCell extends React.Component {
                 <View style={{flexDirection: 'row'}}>
                     {this.props.showArrow && <TouchableOpacity activeOpacity={1}
                                                                onPress={() => {
-                                                                   if (this.props.model == TreeSelectorModel.singleSelectEvery ||
-                                                                       this.props.model == TreeSelectorModel.multiSelectEvery ) {
+                                                                   if (this.props.model == TreeSelectorModel.singleSelectAny ||
+                                                                       this.props.model == TreeSelectorModel.multiSelectAny ) {
                                                                        this.props.onNextPress(this.props.data)
                                                                    }
                                                                    else {
@@ -90,7 +90,7 @@ export default class RadioCell extends React.Component {
                                                                }}>
 
                         <View style={{flexDirection: "row", alignItems: 'center', justifyContent: 'center'}}>
-                            {(this.props.model == TreeSelectorModel.singleSelectEvery || this.props.model == TreeSelectorModel.multiSelectEvery ) && <View style={{
+                            {(this.props.model == TreeSelectorModel.singleSelectAny || this.props.model == TreeSelectorModel.multiSelectAny ) && <View style={{
                                 height: 15,
                                 width: 1.5,
                                 backgroundColor: this.tintColor,

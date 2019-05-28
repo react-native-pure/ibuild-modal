@@ -56,8 +56,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
             showLoading: false,
             currentSelectPath: !!props.lastSelectedPath ? props.lastSelectedPath : [],
             dataSource: this.dataSouceMapping(props.dataSource),
-            selectedData: !!props.selectedDataSouce && (props.model === TreeSelectorModel.multiSelectEvery || props.model === TreeSelectorModel.multiSelectToEnd) ? this.dataSouceMapping(props.selectedDataSouce) : []
-        };
+       };
     }
 
     componentDidMount() {
@@ -68,10 +67,11 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
     }
 
     componentWillReceiveProps(props) {
-        this.setState({
-            currentSelectPath: !!props.lastSelectedPath ? props.lastSelectedPath : [],
-            selectedData: !!props.selectedDataSouce && (props.model === TreeSelectorModel.multiSelectEvery || props.model === TreeSelectorModel.multiSelectToEnd) ? this.dataSouceMapping(props.selectedDataSouce) : []
-        });
+        if(props.lastSelectedPath !== this.props.lastSelectedPath){
+            this.setState({
+                currentSelectPath: !!props.lastSelectedPath ? props.lastSelectedPath : [],
+            });
+        }
     }
 
     updateState = (state: ImmutableHelperObject, callback: Function) => {
@@ -126,7 +126,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
      * @param {props} object
      * */
     async dealHistoryAsync(props) {
-        let datasouce = this.arrayCopy(!!props.dataSource ? props.dataSource : [])
+        let datasouce = this.dataSouceMapping(!!props.dataSource ? props.dataSource : [])
         if (props.storageKey) {
             let historyItem = await this.initialHistoryAsync();
             if (!!historyItem) {
@@ -154,7 +154,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
             }
             return null;
         }
-        const path = find(this.props.dataSource);
+        const path = find(this.dataSouceMapping(this.props.dataSource));
         if (path && path.length > 0) {
             return {
                 ...path[path.length - 1],
@@ -199,7 +199,6 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
      * @return {Bool} true-显示分区多列表结构，false-显示单列表结构
      * */
     showListTree() {
-
         if (this.props.maxLevel === 0 || this.props.maxLevel === 1) {
             return false
         } else if (this.state.currentSelectPath.length < this.props.maxLevel) {
@@ -220,96 +219,53 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         }
     }
 
-    /**
-     * 多选选中/取消
-     * @param seletedItem
-     * @param level
-     */
-    finishMulDataSelected(seletedItem, level) {
-
-        let isSelected = true;
-        let paths = this.state.currentSelectPath;
-        paths.splice(level, paths.length - level);
-
-        let updateState = {}
-        updateState.currentSelectPath = {$set:paths}
-
-        if (this.isSelected(seletedItem)) {
-            let index = this.getSelectedItenIndex(seletedItem);
-            updateState.selectedData = {$splice: [[index, 1]]}
-            isSelected = false
-        } else {
-            updateState.selectedData = {$push: [seletedItem]}
-        }
-        this.updateState(updateState, () => {
-            this.saveLogs(seletedItem.key);
-            if (isSelected) {
-                this.props.onSelected(seletedItem, this.state.currentSelectPath)
-            } else {
-                this.props.onUnSelected(seletedItem, this.state.currentSelectPath)
+    async removeLogs(itemSysNo) {
+        const key = this.props.storageKey;
+        if (key) {
+            const logs = await ProjectStorage.getItem(key, []);
+            const index = logs.indexOf(itemSysNo);
+            if (index >= 0) {
+                logs.splice(index,1)
+                return ProjectStorage.setItem(key, logs);
             }
-        })
+        }
     }
 
-
-    /**
-     * 单选选到最末尾
-     * @param seletedItem
-     * @param level
-     */
-    finishDataSelected(seletedItem, level) {
-
-        let paths = this.state.currentSelectPath;
-        paths.splice(level, paths.length - level);
-        let updateState = {}
-        updateState.currentSelectPath = {$set:paths}
-        updateState.selectedData = {$push: [seletedItem]}
-        this.updateState(updateState, () => {
-            this.saveLogs(seletedItem.key);
-            this.props.onChange(seletedItem, this.state.currentSelectPath)
-        })
-    }
 
     /**
      * 点击某一行
      * @param item
      * @param level
      */
-    onCellPress(item, level) {
-        switch (this.props.model) {
-            case TreeSelectorModel.multiSelectEvery: {
-                if (item.isHistoryPath) {
-                    this.onNextPress(item, level)
-                } else {
-                    this.finishMulDataSelected(item, level)
-                }
-            }
-                break;
-            case TreeSelectorModel.multiSelectToEnd: {
-                if (item.haveChildren) {
-                    this.onNextPress(item, level)
-                } else {
-                    this.finishMulDataSelected(item, level);
-                }
-            }
-                break;
-            case TreeSelectorModel.singleSelectEvery: {
-                if (item.isHistoryPath) {
-                    this.onNextPress(item, level)
-                } else {
-                    this.finishDataSelected(item, level)
-                }
-            }
-                break;
-            case TreeSelectorModel.singleSelectToEnd: {
-                if (item.haveChildren) {
-                    this.onNextPress(item, level)
-                } else {
-                    this.finishDataSelected(item, level);
-                }
-            }
-                break
+    onCellPress(seletedItem, level) {
 
+        if(seletedItem.isHistoryPath ||
+            (seletedItem.haveChildren && ( this.props.model === TreeSelectorModel.singleSelectToEnd || this.props.model == TreeSelectorModel.multiSelectToEnd))){
+            this.onNextPress(seletedItem, level)
+        }
+        else{
+            let paths = this.state.currentSelectPath;
+            paths.splice(level, paths.length - level);
+
+            /**多选判断**/
+            if(this.props.model === TreeSelectorModel.multiSelectAny || this.props.model == TreeSelectorModel.multiSelectToEnd){
+                if (this.isSelected(seletedItem)) {
+                    this.removeLogs(seletedItem.key)
+                    this.props.onUnSelected(seletedItem.data, paths)
+
+                } else {
+                    this.saveLogs(seletedItem.key)
+                    this.props.onSelected(seletedItem.data, paths)
+                }
+            }
+            /**单选到底模式判断**/
+            else if(seletedItem.haveChildren && this.props.model === TreeSelectorModel.singleSelectToEnd){
+                this.onNextPress(seletedItem, level)
+            }
+            else{
+                this.saveLogs(seletedItem.key)
+                this.props.onSelected(seletedItem.data, paths)
+            }
         }
     }
 
@@ -339,7 +295,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
             this.setState({
                 showLoading: true
             })
-            let newData = await this.props.loadDataFuc(selecteItem);
+            let newData = await this.props.loadDataFuc(selecteItem.data);
             selecteItem.children = this.dataSouceMapping(newData)
             updateState.showLoading = {$set: false}
             updateState.currentSelectPath = {$splice: [[level, this.state.currentSelectPath.length - level, selecteItem]]}
@@ -352,7 +308,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
             setTimeout(() => {
                 this.headerScrollView && this.headerScrollView.scrollToEnd()
             }, 1)
-            this.props.onChange && this.props.onChange(selecteItem, this.state.currentSelectPath)
+            this.props.onChange && this.props.onChange(selecteItem.data, this.state.currentSelectPath)
             callBack && callBack()
         })
     }
@@ -360,26 +316,16 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
 
     isSelected(seletedItem) {
 
-        if (!!this.state.selectedData) {
-            for (let i = 0; i < this.state.selectedData.length; i++) {
-                let item = this.state.selectedData[i];
+        let list = this.dataSouceMapping(this.props.selectedDataSouce)
+        if (list && list.length>0) {
+            for (let i = 0; i < list.length; i++) {
+                let item = list[i];
                 if (item.key === seletedItem.key && seletedItem.value === item.value) {
                     return true
                 }
             }
         }
         return false
-    }
-
-
-    getSelectedItenIndex(seletedItem) {
-        for (let i = 0; i < this.state.selectedData.length; i++) {
-            let item = this.state.selectedData[i];
-            if (item.key === seletedItem.key && seletedItem.value === item.value) {
-                return i
-            }
-        }
-        return 0
     }
 
     mappingSectionData(data) {
@@ -474,7 +420,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                     text={(this.props.showFullValue && !!item.fullValue) ? item.fullValue : item.value}
                     data={item}
                     selected={this.isSelected(item)}
-                    showRadio={!!(((!item.haveChildren && this.props.model === TreeSelectorModel.multiSelectToEnd) || this.props.model === TreeSelectorModel.multiSelectEvery) && !item.isHistoryPath)}
+                    showRadio={!!(((!item.haveChildren && this.props.model === TreeSelectorModel.multiSelectToEnd) || this.props.model === TreeSelectorModel.multiSelectAny) && !item.isHistoryPath)}
                     showArrow={!!item.haveChildren}/>
             }}/>
 
@@ -514,7 +460,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                     text={!!item.fullValue ? item.fullValue : item.value}
                     data={item}
                     selected={this.isSelected(item)}
-                    showRadio={!!(((!item.haveChildren && this.props.model === TreeSelectorModel.multiSelectToEnd) || this.props.model === TreeSelectorModel.multiSelectEvery) && !item.isHistoryPath)}
+                    showRadio={!!(((!item.haveChildren && this.props.model === TreeSelectorModel.multiSelectToEnd) || this.props.model === TreeSelectorModel.multiSelectAny) && !item.isHistoryPath)}
                     showArrow={!!item.haveChildren}/>
             }}/>
     }
