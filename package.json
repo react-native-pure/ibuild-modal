@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/react-native-pure/treeModal.git"
+    "url": "git+https://github.com/react-native-pure/ibuild-modal.git"
   },
   "keywords": [
     "ibuild-modal"
@@ -18,9 +18,9 @@
   "author": "kk",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/react-native-pure/treeModal/issues"
+    "url": "https://github.com/react-native-pure/ibuild-modal/issues"
   },
-  "homepage": "https://github.com/react-native-pure/treeModal#readme",
+  "homepage": "https://github.com/react-native-pure/ibuild-modal#readme",
   "peerDependencies": {
     "react": ">=16",
     "react-native": ">=0.47",
