@@ -22,8 +22,8 @@ export default class NavigationHeader extends PureComponent<NavigationHeaderProp
         if(this.props.hiddenLeft){
             return  <View style={styles.leftButton}/>
         }
-        if(this.props.renderLeftButton){
-            return this.props.renderLeftButton()
+        if(this.props.renderLeft){
+            return this.props.renderLeft()
         }
         return (
             <TouchableWithoutFeedback onPress={() => {
@@ -45,8 +45,8 @@ export default class NavigationHeader extends PureComponent<NavigationHeaderProp
         if(this.props.hiddenRight){
             return  <View style={styles.rightButton}/>
         }
-        if(this.props.renderRightButton){
-            return this.props.renderRightButton()
+        if(this.props.renderRight){
+            return this.props.renderRight()
         }
         return (
             <TouchableWithoutFeedback onPress={() => {

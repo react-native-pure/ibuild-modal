@@ -37,6 +37,6 @@ export type NavigationHeaderProps = {
     onPressRight?:()=>void,
     hiddenLeft?:boolean,
     hiddenRight?:boolean,
-    renderLeftButton?:() => React.ReactElement < any >,
-    renderRightButton?:() => React.ReactElement< any >
+    renderLeft?:() => React.ReactElement < any >,
+    renderRight?:() => React.ReactElement< any >
 }

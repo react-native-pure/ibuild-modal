@@ -15,7 +15,13 @@ $ npm i @react-native-pure/ibuild-modal --save
 
 ## Documentaion
 
-Quite easy to use:
+Quite easy to use TreeModal:
+
+![The final rendering](./assets/gif/单列选择模式.gif)
+![The final rendering](./assets/gif/多列任意选.gif)
+![The final rendering](./assets/gif/多列单选.gif)
+![The final rendering](./assets/gif/多选任意.gif)
+![The final rendering](./assets/gif/多选到底.gif)
 
 ```
 import React from 'react'
@@ -103,6 +109,8 @@ import update from "immutability-helper";
 ```
 
 
+### TreeModal 
+
 ### TreeModalProps
 - `dataSource` **Array<Object>** 
 - `selectedDataSouce` **Array<Object>** 
@@ -128,8 +136,8 @@ import update from "immutability-helper";
 - `onPressRight?` **()=>void** 
 - `hiddenLeft?` **boolean** 
 - `hiddenRight?` **boolean** 
-- `renderLeftButton?` **React.ReactElement < any >** 
-- `renderRightButton?` **React.ReactElement < any >** 
+- `renderLeft?` **React.ReactElement < any >** 
+- `renderRight?` **React.ReactElement < any >** 
 - `renderEmpty?` **React.ReactElement < any >** 
 
 
@@ -162,8 +170,8 @@ import update from "immutability-helper";
 - `onPressRight?` **()=>void** 
 - `hiddenLeft?` **boolean** 
 - `hiddenRight?` **boolean** 
-- `renderLeftButton?` **React.ReactElement < any >** 
-- `renderRightButton?` **React.ReactElement < any >** 
+- `renderLeft?` **React.ReactElement < any >** 
+- `renderRight?` **React.ReactElement < any >** 
 
 ### NavigationBarStyle
 ####导航栏样式
