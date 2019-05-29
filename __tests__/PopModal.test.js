@@ -7,12 +7,12 @@
 
 import React from 'react'
 import {render} from 'react-native-testing-library'
-import {TreeSelector} from '../index'
+import {PopModal} from '../index'
 
 describe('TreeModal', () => {
     it('renders correctly', () => {
         const instance = render(
-            <TreeSelector/>
+            <PopModal/>
         );
         expect(instance.toJSON()).toMatchSnapshot();
     });
