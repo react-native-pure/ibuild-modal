@@ -5,6 +5,7 @@ Modal | 属性 | 说明
 PageModal  | [PageModalProps](#pagemodalprops)| 页码切换modal
 TreeModal | [TreeModalProps](#treemodalprops)| 层级选择modal 
 TreeSelector | [TreeSelectorProps](#treeselectorprops) | 层级选择组件 
+PopModal | [PopModalProps](#popmodalprops)| 底部弹出modal组件
 
 
 ## Install
@@ -196,3 +197,10 @@ import update from "immutability-helper";
  - `horizontal`:"horizontal"  从右往左推出页面
  - `vertical`:"vertical" 从下往上推出页面
 
+### PopModalProps 
+ - `visible` **boolean** 
+ - `onRequestClose` **()=>void** 
+ - `onShown?` **()=>void** 
+ - `onHidden?` **()=>void** 
+ - `children?` **any* 
+  
