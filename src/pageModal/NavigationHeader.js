@@ -5,7 +5,7 @@
 
 import React, {PureComponent} from "react"
 import {View, Text, StyleSheet, TouchableWithoutFeedback, Platform, Image,SafeAreaView} from "react-native"
-import {NavigationHeaderProps} from "../../config/TreeModalTypes";
+import {NavigationHeaderProps} from "../../config/PageModalTypes";
 import {get as getPath} from "object-path";
 
 export default class NavigationHeader extends PureComponent<NavigationHeaderProps> {

@@ -11,7 +11,7 @@ export type NavigationBarStyle = {
     title:Object,
     leftButton:Object,
     rightButton:Object,
-    contaner:Object
+    container:Object
 }
 
 

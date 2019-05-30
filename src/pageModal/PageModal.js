@@ -197,12 +197,12 @@ export default class PageModal extends PureComponent<PageModalProps> {
         });
     }
 
-    _onGestureEvent({nativeEvent}) {
+    _onGestureEvent = ({nativeEvent})=> {
         const translationX = nativeEvent.translationX
         this.state.enabledGesture && this.state.translateX.setValue(translationX)
     }
 
-    _openingHandlerStateChange({nativeEvent}) {
+    _openingHandlerStateChange =({nativeEvent})=> {
         if (!this.state.enabledGesture) {
             return
         }

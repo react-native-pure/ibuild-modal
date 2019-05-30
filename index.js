@@ -8,6 +8,7 @@ module.exports = {
     PageModal: require('./src/pageModal/PageModal').default,
     PopModal:require('./src/PopModal').default,
     TreeSelector:require('./src/treeModal/TreeSelector').default,
+    NavigationHeader:require('./src/pageModal/NavigationHeader').default,
     ...require('./config/Enums'),
     ...require('./config/TreeModalTypes')
 };
