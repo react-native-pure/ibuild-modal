@@ -14,7 +14,7 @@ import {TreeSelectorModel, TransitionType} from "../../config/Enums";
 import {MainBackgroundColor} from "../../config/DefaultTheme";
 import EmptyView from './EmptyView';
 import TreeSelector from './TreeSelector';
-import {TreeModalProps} from '../../config/TreeModalTypes'
+import type {ModalProps} from "../..//config/Types";
 
 const styles = StyleSheet.create({
     container: {
@@ -22,6 +22,10 @@ const styles = StyleSheet.create({
         backgroundColor: MainBackgroundColor
     }
 })
+export type TreeModalProps = {
+    renderEmpty?:() => React.ReactElement < any >,
+} & PageModalProps & TreeSelectorProps & ModalProps
+
 
 export  default class TreeModal extends React.Component<TreeModalProps>{
     

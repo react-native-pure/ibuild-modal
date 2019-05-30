@@ -16,7 +16,7 @@ import {TransitionType} from "../../config/Enums";
 import NavigationHeader from "./NavigationHeader";
 import {HeaderColor} from "../../config/DefaultTheme";
 import {PanGestureHandler} from 'react-native-gesture-handler';
-import {PageModalProps} from "../../config/TreeModalTypes";
+import type {ModalProps} from "../../config/Types";
 
 const deviceSize = Dimensions.get('window')
 
@@ -33,6 +33,15 @@ const deviceSize = Dimensions.get('window')
  * @property enabledGesture - 是否支持滑动关闭手势
  *
  */
+export type PageModalProps = {
+    onRequestClose: (data:any | null)=>void,
+    children?: any,
+    title?: string,
+    transition?: $Values<typeof TransitionType>,  /**页码跳转动画，默认horizontal**/
+    hiddenNavBar?: boolean, /**是否隐藏,默认不隐藏**/
+    enabledGesture?: boolean,
+    renderNavBar:() => React.ReactElement < any >,
+}&NavigationHeaderProps & ModalProps
 
 
 export default class PageModal extends PureComponent<PageModalProps> {

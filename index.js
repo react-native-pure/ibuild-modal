@@ -9,8 +9,16 @@ module.exports = {
     PopModal:require('./src/PopModal').default,
     TreeSelector:require('./src/treeModal/TreeSelector').default,
     NavigationHeader:require('./src/pageModal/NavigationHeader').default,
+    WheelModal:require("./src/WheelModal").default,
+    ShareModal:require("./src/ShareModal").default,
+    QRScanModal:require("./src/QRScanModal").default,
+    ListViewModel:require("./src/ListViewModel").default,
+    ImageEditModal:require("./src/ImageEditModal").default,
+    GalleryViewerModal:require('./src/GalleryViewerModal').default,
+    CameraModal:require("./src/CameraModal").default,
+    ActionSheetModal:require("./src/ActionSheetModal").default,
     ...require('./config/Enums'),
-    ...require('./config/TreeModalTypes')
+    ...require('./config/Types'),
 };
 
 
