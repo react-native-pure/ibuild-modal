@@ -17,6 +17,7 @@ module.exports = {
     GalleryViewerModal:require('./src/GalleryViewerModal').default,
     CameraModal:require("./src/CameraModal").default,
     ActionSheetModal:require("./src/ActionSheetModal").default,
+    cleanTreeModalStorage:require("./storage/LocalStorage").default.cleanStorage,
     ...require('./config/Enums'),
     ...require('./config/Types'),
 };

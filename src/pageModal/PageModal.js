@@ -17,6 +17,7 @@ import NavigationHeader from "./NavigationHeader";
 import {HeaderColor} from "../../config/DefaultTheme";
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import type {ModalProps} from "../../config/Types";
+import type {NavigationHeaderProps} from "./NavigationHeader";
 
 const deviceSize = Dimensions.get('window')
 
