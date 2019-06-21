@@ -288,7 +288,6 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
     }
 
     async componentDidMount() {
-        super.componentDidMount();
         //申请视频的录音权限
         try {
             await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, {
@@ -297,10 +296,6 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             });
         } catch (ex) {
         }
-    }
-
-    componentWillUnmount() {
-        super.componentWillUnmount()
     }
 }
 
