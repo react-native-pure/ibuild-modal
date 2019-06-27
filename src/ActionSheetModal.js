@@ -3,7 +3,7 @@ import {StyleSheet, Text, TouchableOpacity, View} from "react-native"
 import PopModal from './PopModal';
 import {SafeAreaView} from 'react-navigation'
 import {ActionSheetCancelButtonEnum} from "../config/Enums";
-import type {ActionSheetModalButton} from "../config/Types";
+import type {ActionSheetModalButton, ModalProps} from "../config/Types";
 
 /**
  * @alias ActionSheetModal.propTypes

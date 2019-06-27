@@ -2,6 +2,7 @@ import React, {Component} from "react"
 import {StyleSheet, View} from "react-native"
 import PopModal from './PopModal';
 import {Button,WhiteButtonStyles,FlatListPaging} from "@ibuild-community/react-native-applet";
+import type {ModalProps} from "../config/Types";
 
 type ListViewModelProps = {
     data:Array<any>,

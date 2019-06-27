@@ -15,6 +15,8 @@ import {MainBackgroundColor} from "../../config/DefaultTheme";
 import EmptyView from './EmptyView';
 import TreeSelector from './TreeSelector';
 import type {ModalProps} from "../..//config/Types";
+import type {PageModalProps} from "../pageModal/PageModal";
+import type {TreeSelectorProps} from "./TreeSelector";
 
 const styles = StyleSheet.create({
     container: {

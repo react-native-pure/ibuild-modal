@@ -3,6 +3,7 @@ import {View, Text, StyleSheet, Image, TouchableWithoutFeedback} from "react-nat
 import {shareToWeChatSceneTimeline, shareToWeChatSceneSession} from "@ibuild-community/react-native-share";
 import {ShareData} from '@ibuild-community/react-native-share/index'
 import PopModal from "./PopModal"
+import type {ModalProps} from "../config/Types";
 
 
 type ShareModalProps = ModalProps & {

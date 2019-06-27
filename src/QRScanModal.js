@@ -10,6 +10,7 @@ import {TransitionType,QRBarCodeEnum} from "../config/Enums";
 import QRScanView from "./basic/QRScanView";
 import type {QRScannerRectViewProps} from "./basic/QRScannerRectView";
 import NavigationHeader from './pageModal/NavigationHeader'
+import type {ModalProps} from "../config/Types";
 
 type QRScanModalProps =  {
     transition?: $Values<typeof TransitionType>,
@@ -35,7 +36,6 @@ export default class QRScanModal extends PureComponent <QRScanModalProps> {
             mounted: false
         }
     }
-
 
     get scanning() {
         return this.props.visible && !this.props.isLoading

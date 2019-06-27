@@ -8,6 +8,7 @@ import WheelPicker from "@ibuild-community/react-native-wheel-picker"
 import {StyleSheet, Text, TouchableHighlight, View} from "react-native"
 import {get as getPath} from "object-path"
 import PopModal from './PopModal'
+import type {ModalProps} from "../config/Types";
 
 const TEXT_COLOR = "#030303";
 const UnderlayColor = "#f1f1f1";

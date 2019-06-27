@@ -22,6 +22,7 @@ import NavigationHeader from './pageModal/NavigationHeader';
 import update from "immutability-helper";
 import GalleryViewer from '@react-native-pure/gallery';
 import {GalleryFileType} from '../config/Types';
+import type {ImageListPickerData, ModalProps} from "../config/Types";
 
 const VideoPlayer = withSimpleControl()(Video)
 

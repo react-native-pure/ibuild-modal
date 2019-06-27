@@ -18,6 +18,7 @@ import AnimatedCircleProgress from './basic/AnimatedCircleProgress';
 import PageModal from "./pageModal/PageModal";
 import {ImagePickerMediaEnum,TransitionType} from "../config/Enums";
 import {ImagePickerResult} from '../config/Types'
+import type {ModalProps} from "../config/Types";
 
 export type CameraProps = {
     type: $Values<typeof ImagePickerMediaEnum>,
