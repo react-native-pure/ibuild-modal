@@ -19,7 +19,8 @@ type ActionSheetModalProps = {
     title?: string,
     buttons: Array<ActionSheetModalButton>,
     style?: any,
-    cancelType?: $Values< typeof ActionSheetCancelButtonEnum>
+    cancelType?: $Values< typeof ActionSheetCancelButtonEnum>,
+    disableBorderRadius?:boolean,
 } & ModalProps;
 
 /**
@@ -30,7 +31,8 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
     static defaultProps = {
         visible: false,
         buttons: [],
-        cancelType: ActionSheetCancelButtonEnum.cancel
+        cancelType: ActionSheetCancelButtonEnum.cancel,
+        disableBorderRadius:false,
     };
 
     _renderTitle() {
@@ -49,7 +51,7 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
             return (
 
                 <TouchableOpacity onPress={this.props.onCancel}>
-                    <View style={styles.delete}>
+                    <View style={[styles.delete,this.props.disableBorderRadius?{borderRadius:0}:{}]}>
                         <Text style={styles.deleteText}>删除</Text>
                     </View>
                 </TouchableOpacity>
@@ -58,7 +60,7 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
         else if (this.props.cancelType === ActionSheetCancelButtonEnum.cancel) {
             return (
                 <TouchableOpacity onPress={this.props.onRequestClose}>
-                    <View style={styles.delete}>
+                    <View style={[styles.delete,this.props.disableBorderRadius?{borderRadius:0}:{}]}>
                         <Text style={styles.cancelText}>取消</Text>
                     </View>
                 </TouchableOpacity>
@@ -73,22 +75,22 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
                       onShown={this.props.onShown}
                       onHidden={this.props.onHidden}
                       onRequestClose={this.props.onRequestClose}>
-                <SafeAreaView style={[styles.container, this.props.style]}
-                      onStartShouldSetResponder={() => {
-                          return true
-                      }}>
-                    <View style={styles.topView}>
-                    {this._renderTitle()}
+                <SafeAreaView style={[styles.container,this.props.disableBorderRadius?{marginHorizontal:0}:{} ,this.props.style]}
+                              onStartShouldSetResponder={() => {
+                                  return true
+                              }}>
+                    <View style={[styles.topView,this.props.disableBorderRadius?{borderRadius:0}:{}]}>
+                        {this._renderTitle()}
 
-                    {this.props.buttons.map((button: ActionSheetModalButton, index: number) => {
-                        return <TouchableOpacity key={index}
-                                                 style={styles.button}
-                                                 onPress={()=>{
-                                                     button.onPress && button.onPress(index)
-                                                 }}>
-                            <Text style={styles.buttonText}>{button.text}</Text>
-                        </TouchableOpacity>
-                    })}
+                        {this.props.buttons.map((button: ActionSheetModalButton, index: number) => {
+                            return <TouchableOpacity key={index}
+                                                     style={styles.button}
+                                                     onPress={()=>{
+                                                         button.onPress && button.onPress(index)
+                                                     }}>
+                                <Text style={[styles.buttonText,button.textColor?{color:button.textColor}:{}]}>{button.text}</Text>
+                            </TouchableOpacity>
+                        })}
                     </View>
                     {this._renderCancel()}
                 </SafeAreaView>
@@ -101,7 +103,8 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: 'rgba(0,0,0,0)',
-        paddingBottom:20
+        paddingBottom:20,
+        marginHorizontal:15,
     },
     title: {
         alignItems: 'center',
@@ -116,7 +119,6 @@ const styles = StyleSheet.create({
     },
     topView:{
         borderRadius:8,
-        marginHorizontal:15,
         overflow:'hidden'
     },
     button: {
@@ -136,7 +138,6 @@ const styles = StyleSheet.create({
         height: 45,
         alignItems: 'center',
         justifyContent: 'center',
-        marginHorizontal:15,
         borderRadius:8,
     },
     deleteText: {
