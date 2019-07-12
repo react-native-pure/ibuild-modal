@@ -16,11 +16,15 @@ import type {ActionSheetModalButton, ModalProps} from "../config/Types";
  * @property cancelType - 隐藏类型
  */
 type ActionSheetModalProps = {
-    title?: string,
-    buttons: Array<ActionSheetModalButton>,
-    style?: any,
-    cancelType?: $Values< typeof ActionSheetCancelButtonEnum>,
+    title?:string,
+    buttons:Array<ActionSheetModalButton>,
+    style?:any,
+    cancelType?:$Values<typeof ActionSheetCancelButtonEnum>,
     disableBorderRadius?:boolean,
+    onDelete?:Function,
+    titleStyle?:any,
+    buttonStyle?:any,
+    cancelButton:?ActionSheetModalButton,
 } & ModalProps;
 
 /**
@@ -32,14 +36,14 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
         visible: false,
         buttons: [],
         cancelType: ActionSheetCancelButtonEnum.cancel,
-        disableBorderRadius:false,
+        disableBorderRadius: false,
     };
 
     _renderTitle() {
-        if (this.props.title) {
+        if (!!this.props.title && this.props.title !== "") {
             return (
                 <View style={styles.title}>
-                    <Text style={styles.titleText}>{this.props.title}</Text>
+                    <Text style={[styles.titleText, this.props.titleStyle]}>{this.props.title}</Text>
                 </View>
             );
         }
@@ -47,21 +51,24 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
     }
 
     _renderCancel() {
+        const {cancelButton:{text, onPress, textColor, textFontSize}={}} = this.props
         if (this.props.cancelType === ActionSheetCancelButtonEnum.delete) {
             return (
-
-                <TouchableOpacity onPress={this.props.onCancel}>
-                    <View style={[styles.delete,this.props.disableBorderRadius?{borderRadius:0}:{}]}>
-                        <Text style={styles.deleteText}>删除</Text>
+                <TouchableOpacity onPress={onPress?onPress:this.props.onDelete}>
+                    <View
+                        style={[styles.delete, this.props.buttonStyle, this.props.disableBorderRadius ? {borderRadius: 0} : {}]}>
+                        <Text
+                            style={[styles.deleteText, textColor ? {color: textColor} : {}, textFontSize ? {fontSize: textFontSize} : {}]}>{text ? text : "删除"}</Text>
                     </View>
                 </TouchableOpacity>
             );
-        }
-        else if (this.props.cancelType === ActionSheetCancelButtonEnum.cancel) {
+        } else if (this.props.cancelType === ActionSheetCancelButtonEnum.cancel) {
             return (
-                <TouchableOpacity onPress={this.props.onRequestClose}>
-                    <View style={[styles.delete,this.props.disableBorderRadius?{borderRadius:0}:{}]}>
-                        <Text style={styles.cancelText}>取消</Text>
+                <TouchableOpacity onPress={onPress?onPress:this.props.onRequestClose}>
+                    <View
+                        style={[styles.delete, this.props.buttonStyle, , this.props.disableBorderRadius ? {borderRadius: 0} : {}]}>
+                        <Text
+                            style={[styles.cancelText, textColor ? {color: textColor} : {}, textFontSize ? {fontSize: textFontSize} : {}]}>{text ? text : "取消"}</Text>
                     </View>
                 </TouchableOpacity>
             );
@@ -75,24 +82,28 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
                       onShown={this.props.onShown}
                       onHidden={this.props.onHidden}
                       onRequestClose={this.props.onRequestClose}>
-                <SafeAreaView style={[styles.container,this.props.disableBorderRadius?{marginHorizontal:0}:{} ,this.props.style]}
-                              onStartShouldSetResponder={() => {
-                                  return true
-                              }}>
-                    <View style={[styles.topView,this.props.disableBorderRadius?{borderRadius:0}:{}]}>
-                        {this._renderTitle()}
+                <SafeAreaView
+                    style={[styles.container, this.props.disableBorderRadius ? {marginHorizontal: 0} : {}, this.props.style]}
+                    onStartShouldSetResponder={() => {
+                        return true
+                    }}>
+                    <View style={this.props.disableBorderRadius ? styles.mainBackGroundColor : styles.transparentColor}>
+                        <View style={[styles.topView, this.props.disableBorderRadius ? {borderRadius: 0} : {}]}>
+                            {this._renderTitle()}
 
-                        {this.props.buttons.map((button: ActionSheetModalButton, index: number) => {
-                            return <TouchableOpacity key={index}
-                                                     style={styles.button}
-                                                     onPress={()=>{
-                                                         button.onPress && button.onPress(index)
-                                                     }}>
-                                <Text style={[styles.buttonText,button.textColor?{color:button.textColor}:{}]}>{button.text}</Text>
-                            </TouchableOpacity>
-                        })}
+                            {this.props.buttons.map(( button:ActionSheetModalButton, index:number ) => {
+                                return <TouchableOpacity key={index}
+                                                         style={[styles.button, this.props.buttonStyle]}
+                                                         onPress={() => {
+                                                             button.onPress && button.onPress(index)
+                                                         }}>
+                                    <Text
+                                        style={[styles.buttonText, button.textFontSize ? {fontSize: button.textFontSize} : {}, button.textColor ? {color: button.textColor} : {}]}>{button.text}</Text>
+                                </TouchableOpacity>
+                            })}
+                        </View>
+                        {this._renderCancel()}
                     </View>
-                    {this._renderCancel()}
                 </SafeAreaView>
 
             </PopModal>
@@ -103,49 +114,55 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: 'rgba(0,0,0,0)',
-        paddingBottom:20,
-        marginHorizontal:15,
+        paddingBottom: 20,
+        marginHorizontal: 15,
+    },
+    mainBackGroundColor: {
+        backgroundColor: '#F0F2F5'
+    },
+    transparentColor: {
+        backgroundColor: "transparent"
     },
     title: {
         alignItems: 'center',
         justifyContent: 'center',
-        height: 45,
         backgroundColor: 'rgba(255,255,255,0.9)',
+        height: 45,
     },
     titleText: {
-        color: '#3C4348',
-        fontSize: 16,
-        fontWeight: 'bold'
+        color: '#8B9098',
+        fontSize: 14,
+        textAlign: 'center'
     },
-    topView:{
-        borderRadius:8,
-        overflow:'hidden'
+    topView: {
+        borderRadius: 8,
+        overflow: 'hidden'
     },
     button: {
-        height: 45,
+        height: 56,
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop:StyleSheet.hairlineWidth,
+        marginTop: 1,
         backgroundColor: 'rgba(255,255,255,0.9)',
     },
     buttonText: {
-        color: '#3C4348',
-        fontSize: 16
+        color: '#36393E',
+        fontSize: 20
     },
     delete: {
         marginTop: 10,
         backgroundColor: 'rgba(255,255,255,0.9)',
-        height: 45,
+        height: 56,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius:8,
+        borderRadius: 8,
     },
     deleteText: {
         color: 'red',
-        fontSize: 16
+        fontSize: 20
     },
     cancelText: {
-        color: '#3C4348',
-        fontSize: 16
+        color: '#36393E',
+        fontSize: 20
     }
 })
