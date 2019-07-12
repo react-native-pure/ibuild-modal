@@ -1,6 +1,6 @@
 {
   "name": "@react-native-pure/ibuild-modal",
-  "version": "0.0.0",
+  "version": "1.2.1",
   "description": "层级选择组件",
   "main": "index.js",
   "scripts": {
