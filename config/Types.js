@@ -59,7 +59,7 @@ export type ImagePickerResult = {
  */
 export type ActionSheetModalButton = {
     text: string,
-    onPress:? (index:number)=>void,
-    textColor:?string,
-    textFontSize:?number
+    onPress?: (index:number)=>void,
+    textColor?:string,
+    textFontSize?:number
 };
