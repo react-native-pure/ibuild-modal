@@ -1,9 +1,9 @@
 import React, {Component} from "react"
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native"
-import PopModal from './PopModal';
+import PopModal from '../PopModal';
 import {SafeAreaView} from 'react-navigation'
-import {ActionSheetCancelButtonEnum} from "../config/Enums";
-import type {ActionSheetModalButton, ModalProps} from "../config/Types";
+import {ActionSheetCancelButtonEnum} from "../../config/Enums";
+import type {ActionSheetModalButton, ModalProps} from "../../config/Types";
 
 /**
  * @alias ActionSheetModal.propTypes
@@ -20,8 +20,6 @@ type ActionSheetModalProps = {
     buttons:Array<ActionSheetModalButton>,
     style?:any,
     cancelType?:$Values<typeof ActionSheetCancelButtonEnum>,
-    disableBorderRadius?:boolean,
-    onDelete?:Function,
     titleStyle?:any,
     buttonStyle?:any,
     cancelButton:?ActionSheetModalButton,
@@ -37,7 +35,6 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
         visible: false,
         buttons: [],
         cancelType: ActionSheetCancelButtonEnum.cancel,
-        disableBorderRadius: false,
     };
 
     _renderTitle() {
@@ -52,14 +49,14 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
     }
 
     _renderCancel() {
-        const {cancelButton:{text, onPress, textColor, textFontSize}={}} = this.props
-        if (this.props.cancelType === ActionSheetCancelButtonEnum.delete) {
+        const {cancelButton:{isDelete,text, onPress, textColor, textFontSize}={}} = this.props
+        if (this.props.cancelType === ActionSheetCancelButtonEnum.delete || isDelete) {
             return (
-                <TouchableOpacity onPress={onPress?onPress:this.props.onDelete}>
+                <TouchableOpacity onPress={onPress?onPress:this.props.onRequestClose}>
                     <View
-                        style={[styles.delete, this.props.buttonStyle, this.props.disableBorderRadius ? {borderRadius: 0} : {}]}>
+                        style={[styles.delete, this.props.buttonStyle]}>
                         <Text
-                            style={[styles.deleteText, textColor ? {color: textColor} : {}, textFontSize ? {fontSize: textFontSize} : {}]}>{text ? text : "删除"}</Text>
+                            style={[styles.deleteText, textColor ? {color: textColor} : {color:"red"}, textFontSize ? {fontSize: textFontSize} : {}]}>{text ? text : "删除"}</Text>
                     </View>
                 </TouchableOpacity>
             );
@@ -67,7 +64,7 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
             return (
                 <TouchableOpacity onPress={onPress?onPress:this.props.onRequestClose}>
                     <View
-                        style={[styles.delete, this.props.buttonStyle, , this.props.disableBorderRadius ? {borderRadius: 0} : {}]}>
+                        style={[styles.delete, this.props.buttonStyle,]}>
                         <Text
                             style={[styles.cancelText, textColor ? {color: textColor} : {}, textFontSize ? {fontSize: textFontSize} : {}]}>{text ? text : "取消"}</Text>
                     </View>
@@ -84,12 +81,12 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
                       onHidden={this.props.onHidden}
                       onRequestClose={this.props.onRequestClose}>
                 <SafeAreaView
-                    style={[styles.container, this.props.disableBorderRadius ? {marginHorizontal: 0} : {}, this.props.style]}
+                    style={[styles.container, this.props.style]}
                     onStartShouldSetResponder={() => {
                         return true
                     }}>
-                    <View style={this.props.disableBorderRadius ? styles.mainBackGroundColor : styles.transparentColor}>
-                        <View style={[styles.topView, this.props.disableBorderRadius ? {borderRadius: 0} : {}]}>
+                    <View style={ styles.mainBackGroundColor}>
+                        <View style={[styles.topView,]}>
                             {this._renderTitle()}
 
                             {this.props.buttons.map(( button:ActionSheetModalButton, index:number ) => {
@@ -115,8 +112,7 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
 const styles = StyleSheet.create({
     container: {
         backgroundColor: 'rgba(0,0,0,0)',
-        paddingBottom: 20,
-        marginHorizontal: 15,
+        marginHorizontal: 0,
     },
     mainBackGroundColor: {
         backgroundColor: '#F0F2F5'
@@ -136,7 +132,6 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     topView: {
-        borderRadius: 8,
         overflow: 'hidden'
     },
     button: {
@@ -156,7 +151,6 @@ const styles = StyleSheet.create({
         height: 56,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 8,
     },
     deleteText: {
         color: 'red',

@@ -60,6 +60,10 @@ export type ImagePickerResult = {
 export type ActionSheetModalButton = {
     text: string,
     onPress?: (index:number)=>void,
+    /**android有效,ios只有删除按钮有效*/
     textColor?:string,
-    textFontSize?:number
+    /**android有效*/
+    textFontSize?:number,
+    /**是否是删除按钮，iOS必须设置**/
+    isDelete?:boolean
 };
