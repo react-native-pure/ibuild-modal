@@ -49,6 +49,7 @@ export type ImagePickerResult = {
     mime: string;
     size: number,
     modificationDate: string,
+    dur?:number
 };
 
 

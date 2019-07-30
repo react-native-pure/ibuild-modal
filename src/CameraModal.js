@@ -16,14 +16,19 @@ import {RNCamera} from '@ibuild-community/react-native-camera';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AnimatedCircleProgress from './basic/AnimatedCircleProgress';
 import PageModal from "./pageModal/PageModal";
-import {ImagePickerMediaEnum,TransitionType} from "../config/Enums";
+import {ImagePickerMediaEnum, TransitionType} from "../config/Enums";
 import {ImagePickerResult} from '../config/Types'
 import type {ModalProps} from "../config/Types";
+import update from 'immutability-helper'
 
 export type CameraProps = {
-    type: $Values<typeof ImagePickerMediaEnum>,
-    onRequestClose: (ImagePickerResult) => void,
-    onError?: (err: Object) => void,
+    type:$Values<typeof ImagePickerMediaEnum>,
+    onRequestClose:(result: ImagePickerResult ) => void,
+    onError?:( err:Object ) => void,
+    /***
+     * 最长视频录制时间，默认20秒
+     */
+    maxDur?:number
 } & ModalProps
 
 export default class CameraModal extends React.PureComponent<CameraProps> {
@@ -31,13 +36,14 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
     static defaultProps = {
         type: ImagePickerMediaEnum.any,
         visible: false,
-        onError: () => null
+        onError: () => null,
+        maxDur:20
     }
 
-    constructor(props) {
+    constructor( props ) {
         super(props);
         this.isRecording = false
-        this.progressPerMS = 1.0 / (20 * 1000)
+        this.progressPerMS = 1.0 / (this.props.maxDur * 1000)
         this.duration = 1000.0 / 30;
         this._onPressOut = () => {
             if (this.isRecording && this.videoEnable) {
@@ -153,14 +159,19 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
     }
 
 
-    startProgressTimer(startTime) {
-        const diff = Date.now() - startTime;
-        startTime = Date.now();
-        const progress = diff * this.progressPerMS;
+    startProgressTimer = ( startTime )=>{
+
         if (this.isRecording && this.state.progress < 1.0) {
-            this.updateState({
+
+            const diff = Date.now() - startTime;
+            startTime = Date.now();
+            const progress = diff * this.progressPerMS;
+
+            const nextState = update(this.state, {
                 progress: {$set: this.state.progress + progress}
-            }, () => {
+            })
+            this.setState(nextState, () => {
+                console.log("progress:",this.state.progress,this.duration)
                 setTimeout(this.startProgressTimer.bind(this, startTime), this.duration);
             })
         }
@@ -176,7 +187,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             }, () => {
                 this.startProgressTimer(Date.now())
                 let option = {
-                    maxDuration: 20,
+                    maxDuration: this.props.maxDur,
                     //质量设置为480P,否则android会发生crash
                     quality: RNCamera.Constants.VideoQuality['480p']
                 }
@@ -184,7 +195,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                     option.codec = RNCamera.Constants.VideoCodec.H264
                 }
 
-                this.camera.recordAsync(option).then((data) => {
+                this.camera.recordAsync(option).then(( data ) => {
                     this.isRecording = false;
                     this.setState({
                         progress: 0
@@ -195,8 +206,9 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                         mime: "video/" + (data.uri.split("/").pop()).split(".").pop(),
                         height: data.height,
                         width: data.width,
+                        dur:this.state.progress * this.props.maxDur
                     })
-                }).catch((err) => {
+                }).catch(( err ) => {
                     this.isRecording = false;
                     this.setState({
                         progress: 0
@@ -327,8 +339,8 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0)',
         padding: 10
     },
-    safeAreaToolBar:{
-        flex:1,
+    safeAreaToolBar: {
+        flex: 1,
         position: 'absolute',
         right: 0,
         top: 0,

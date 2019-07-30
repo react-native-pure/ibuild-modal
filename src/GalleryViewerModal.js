@@ -23,6 +23,7 @@ import update from "immutability-helper";
 import GalleryViewer from '@react-native-pure/gallery';
 import {GalleryFileType} from '../config/Types';
 import type {ImageListPickerData, ModalProps} from "../config/Types";
+import {SafeAreaView} from 'react-navigation'
 
 const VideoPlayer = withSimpleControl()(Video)
 
@@ -35,8 +36,10 @@ export type GalleryViewerModalProps = {
     renderFooter?: (index: number) => React.ReactElement<any>,
     renderHeader?: (index: number) => React.ReactElement<any>,
     renderIndicator?: (data: Object, index: number) => React.ReactElement<any> ,
+    renderError?:(index: number,error:Error) => React.ReactElement<any>,
     showIndicator: boolean,
     onChange?: (index: number) => void,
+    onError?: (index:number,error: Error) => void,
 } & ModalProps
 
 export default class GalleryViewerModal extends React.PureComponent <GalleryViewerModalProps> {
@@ -57,6 +60,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         this.videoViews = new Map();
         this.state = {
             hiddenIndicator: [],
+            errors:[],
             currentIndex: props.initIndex
 
         }
@@ -70,6 +74,21 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         this.setState(update(this.state, {
             hiddenIndicator: {
                 [index]: {$set: true}
+            },
+            errors:{
+                [index]: {$set: null}
+            }
+        }))
+    }
+
+
+    onError(inedex,error) {
+        this.setState(update(this.state, {
+            hiddenIndicator: {
+                [index]: {$set: true}
+            },
+            errors:{
+                [index]: {$set: error}
             }
         }))
     }
@@ -139,6 +158,9 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
     }
 
     renderItem(item, index) {
+        if(this.state.errors[index] && this.props.renderError){
+           return this.props.renderError(index,error)
+        }
         if (item.type === GalleryFileType.image) {
             return (
                 <CachedImage
@@ -147,7 +169,12 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                     resizeMode={'contain'}
                     onLoad={() => {
                         this.onLoad(index)
-                    }}/>
+                    }}
+                    onError={(error)=>{
+                        this.onError(index,error)
+                        this.props.onError && this.props.onError(index,error)
+                    }}
+                />
             )
         } else if (item.type == GalleryFileType.video) {
             return (
@@ -180,7 +207,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                        onShown={this.props.onShown}
                        transition={TransitionType.horizontal}
                        onRequestClose={this.props.onRequestClose}>
-                <View style={[{flex: 1, backgroundColor: '#000'}, this.props.style]}>
+                <SafeAreaView style={[{flex: 1, backgroundColor: '#000'}, this.props.style]}>
                     <GalleryViewer dataSource={this.props.data}
                                    initIndex={this.props.initIndex}
                                    ref={(refs) => {
@@ -205,7 +232,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                                    renderItem={this.renderItem}
                                    renderIndicator={this.renderSpinder}/>
                     {this.renderNavBar()}
-                </View>
+                </SafeAreaView>
             </PageModal>
         )
     }

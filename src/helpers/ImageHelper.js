@@ -11,7 +11,10 @@ import URLParse from "url-parse"
 export function getCacheImagePath(uri: String): String {
     if (uri) {
         const url = URLParse(uri);
-        const ext = getFileExt(url.pathname);
+        let ext = getFileExt(url.pathname);
+        if(ext.split('/').length>1){
+            ext = 'png'
+        }
         const filename = md5(uri);
         return `${RNFetchBlob.fs.dirs.DocumentDir}/images/${filename}.${ext}`;
     }
