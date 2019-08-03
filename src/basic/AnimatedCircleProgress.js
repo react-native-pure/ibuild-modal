@@ -17,7 +17,6 @@ type AnimatedCircleProgressProps = {
     progress: number,
     totalNum:number,
     progressWidth:number,
-    baseProgressWidth: number,
     raduis: number,
     durtime: number,
     progressColor: string,

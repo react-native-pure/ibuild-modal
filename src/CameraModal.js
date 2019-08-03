@@ -23,12 +23,30 @@ import update from 'immutability-helper'
 
 export type CameraProps = {
     type:$Values<typeof ImagePickerMediaEnum>,
-    onRequestClose:(result: ImagePickerResult ) => void,
+    onRequestClose:( result:ImagePickerResult ) => void,
     onError?:( err:Object ) => void,
     /***
      * 最长视频录制时间，默认20秒
      */
-    maxDur?:number
+    maxDur?:number,
+    /***
+     * 录制按钮进度宽度
+     */
+    progressWidth?:number,
+
+
+    /***
+     * 按钮半径
+     */
+    buttonRaduis?:number,
+
+    /**
+     * 按钮横线间距
+     */
+    buttonMargin?:number,
+
+    headerStyle?:any
+
 } & ModalProps
 
 export default class CameraModal extends React.PureComponent<CameraProps> {
@@ -37,7 +55,10 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         type: ImagePickerMediaEnum.any,
         visible: false,
         onError: () => null,
-        maxDur:20
+        maxDur: 20,
+        buttonRaduis:40,
+        buttonMargin:5,
+        progressWidth:4
     }
 
     constructor( props ) {
@@ -159,7 +180,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
     }
 
 
-    startProgressTimer = ( startTime )=>{
+    startProgressTimer = ( startTime ) => {
 
         if (this.isRecording && this.state.progress < 1.0) {
 
@@ -171,7 +192,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                 progress: {$set: this.state.progress + progress}
             })
             this.setState(nextState, () => {
-                console.log("progress:",this.state.progress,this.duration)
+                console.log("progress:", this.state.progress, this.duration)
                 setTimeout(this.startProgressTimer.bind(this, startTime), this.duration);
             })
         }
@@ -206,7 +227,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                         mime: "video/" + (data.uri.split("/").pop()).split(".").pop(),
                         height: data.height,
                         width: data.width,
-                        dur:this.state.progress * this.props.maxDur
+                        dur: this.state.progress * this.props.maxDur
                     })
                 }).catch(( err ) => {
                     this.isRecording = false;
@@ -238,6 +259,10 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         return "点击拍照"
     }
 
+    get contentWidth(){
+        return (this.props.buttonRaduis  - this.props.buttonMargin - this.props.progressWidth) * 2
+    }
+
     render() {
         const touchProps = {}
         if (this.photoEnable) {
@@ -267,23 +292,26 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                         <View style={styles.center}>
                             <Text style={styles.tipText}>{this.isRecording ? "视频录制中" : this.tip}</Text>
                             <View style={styles.tipBtn}>
-                                <AnimatedCircleProgress raduis={45}
+                                <AnimatedCircleProgress raduis={this.props.buttonRaduis}
                                                         totalNum={1}
                                                         progressColor="#1FA5D2"
-                                                        progress={this.state.progress}>
-
+                                                        progress={this.state.progress}
+                                                        progressWidth={this.props.progressWidth}>
+                                    <TouchableOpacity style={styles.pressBtn}
+                                                      {...touchProps}>
+                                        <View style={styles.counter}>
+                                            <View style={[styles.counterContent,{ width:this.contentWidth ,
+                                                height: this.contentWidth,
+                                                borderRadius: this.contentWidth/2}]}/>
+                                        </View>
+                                    </TouchableOpacity>
                                 </AnimatedCircleProgress>
-                                <TouchableOpacity style={styles.pressBtn}
-                                                  {...touchProps}>
-                                    <View style={styles.counter}>
-                                        <View style={styles.counterContent}/>
-                                    </View>
-                                </TouchableOpacity>
+
                             </View>
                         </View>
                     </View>
                     <SafeAreaView style={styles.safeAreaToolBar}>
-                        <View style={styles.toolBar}>
+                        <View style={[styles.toolBar,this.props.headerStyle]}>
                             <TouchableOpacity onPress={this.switchCamera}>
                                 <Icon name="camera-party-mode" color="#fff" size={30}/>
                             </TouchableOpacity>
@@ -347,7 +375,8 @@ const styles = StyleSheet.create({
         left: 0,
     },
     toolBar: {
-        backgroundColor: 'rgba(0,0,0,0.2)',
+        backgroundColor: 'rgba(0,0,0,0)',
+        backgroundColor: 'red',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexDirection: 'row',
@@ -377,9 +406,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         backgroundColor: '#fff',
-        width: 56,
-        height: 56,
-        borderRadius: 28
     },
     pressBtn: {
         position: 'absolute',

@@ -17,7 +17,6 @@ export type CircleProgressViewProps = {
     progress?: number,
     totalNum?: number,
     progressWidth?: number,
-    baseProgressWidth?: number,
     raduis?: number,
     progressColor?: string,
     progressBaseColor?: string,
@@ -27,7 +26,6 @@ export type CircleProgressViewProps = {
 export default class CircleProgressView extends Component<CircleProgressViewProps> {
 
     static defaultProps = {
-        baseProgressWidth: 8,
         progressWidth: 10,
         totalNum: 360,
         progress: 0,
@@ -205,9 +203,9 @@ export default class CircleProgressView extends Component<CircleProgressViewProp
                 <Surface width={this.state.size} height={this.state.size}>
                     <Group>
                         <Shape d={path0} stroke={this.props.progressBaseColor}
-                               strokeWidth={this.props.baseProgressWidth}/>
+                               strokeWidth={this.props.progressWidth}/>
                         <Shape d={path00} stroke={this.props.progressBaseColor}
-                               strokeWidth={this.props.baseProgressWidth}/>
+                               strokeWidth={this.props.progressWidth}/>
                         {this.props.progress > 0 &&
                         <Shape d={path} stroke={this.props.progressColor} strokeWidth={this.props.progressWidth}/>}
                         <Shape d={path1} stroke={this.props.progressColor} strokeWidth={this.props.progressWidth}/>

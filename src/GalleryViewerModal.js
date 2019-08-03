@@ -82,7 +82,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
     }
 
 
-    onError(inedex,error) {
+    onError(index,error) {
         this.setState(update(this.state, {
             hiddenIndicator: {
                 [index]: {$set: true}
@@ -141,10 +141,10 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
     }
 
     renderSpinder(data, index) {
-        if (this.props.renderIndicator) {
-            return this.props.renderIndicator(data, index)
-        }
         if (this.props.showIndicator && data.type === GalleryFileType.image && !this.state.hiddenIndicator[index]) {
+            if (this.props.renderIndicator) {
+                return this.props.renderIndicator(data, index)
+            }
             return (
                 <View style={styles.spinder}>
                     <View style={styles.spinderContainer}>
@@ -159,7 +159,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
 
     renderItem(item, index) {
         if(this.state.errors[index] && this.props.renderError){
-           return this.props.renderError(index,error)
+           return this.props.renderError(index,this.state.errors[index])
         }
         if (item.type === GalleryFileType.image) {
             return (
