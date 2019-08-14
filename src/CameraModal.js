@@ -442,7 +442,6 @@ const styles = StyleSheet.create({
     },
     toolBar: {
         backgroundColor: 'rgba(0,0,0,0)',
-        backgroundColor: 'red',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexDirection: 'row',
