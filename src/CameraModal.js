@@ -10,16 +10,17 @@ import {
     Text,
     TouchableOpacity,
     View,
-    SafeAreaView
+    SafeAreaView, Animated
 } from 'react-native'
 import {RNCamera} from '@ibuild-community/react-native-camera';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AnimatedCircleProgress from './basic/AnimatedCircleProgress';
 import PageModal from "./pageModal/PageModal";
-import {ImagePickerMediaEnum, TransitionType} from "../config/Enums";
+import {ImagePickerMediaEnum, ImageSourceEnum, TransitionType} from "../config/Enums";
 import {ImagePickerResult} from '../config/Types'
 import type {ModalProps} from "../config/Types";
 import update from 'immutability-helper'
+import ImageEditModal from "./ImageEditModal";
 
 export type CameraProps = {
     type:$Values<typeof ImagePickerMediaEnum>,
@@ -45,7 +46,12 @@ export type CameraProps = {
      */
     buttonMargin?:number,
 
-    headerStyle?:any
+    headerStyle?:any,
+
+    /**
+     * 图片编辑，默认false
+     */
+    editImage?:boolean
 
 } & ModalProps
 
@@ -56,9 +62,9 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         visible: false,
         onError: () => null,
         maxDur: 20,
-        buttonRaduis:40,
-        buttonMargin:5,
-        progressWidth:4
+        buttonRaduis: 40,
+        buttonMargin: 5,
+        progressWidth: 4
     }
 
     constructor( props ) {
@@ -139,7 +145,8 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             cameraType: RNCamera.Constants.Type.back,
             flashMode: RNCamera.Constants.FlashMode.auto,
             progress: 0,
-            showCamera: false
+            showCamera: false,
+            imageEdit: false
         }
     }
 
@@ -170,13 +177,23 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         //TODO:fixOrientation:true
         const options = {quality: 1, base64: false, forceUpOrientation: true, fixOrientation: true};
         const data = await this.camera.takePictureAsync(options);
-        this.props.onRequestClose({
+
+        const file = {
             path: data.uri,
             filename: data.uri.split("/").pop(),
             mime: "image/" + (data.uri.split("/").pop()).split(".").pop(),
             height: data.height,
             width: data.width,
-        })
+        }
+        if (this.props.editImage) {
+            this.editImageInfo = file
+            this.setState({
+                imageEdit: true,
+                showCamera: false
+            })
+        } else {
+            this.props.onRequestClose(file)
+        }
     }
 
 
@@ -259,8 +276,49 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         return "点击拍照"
     }
 
-    get contentWidth(){
-        return (this.props.buttonRaduis  - this.props.buttonMargin - this.props.progressWidth) * 2
+    get contentWidth() {
+        return (this.props.buttonRaduis - this.props.buttonMargin - this.props.progressWidth) * 2
+    }
+
+
+    get editImagePath() {
+        if (this.editImageInfo) {
+            return this.editImageInfo.path
+        }
+        return ''
+    }
+
+    /**
+     * 图片编辑结构处理
+     * @param data
+     * @private
+     */
+    _onImageEditResultHanlde = ( data:ImagePickerResult | null ) => {
+        this.setState({
+            imageEdit:false
+        })
+        if (data) {
+            this.props.onRequestClose({
+                path: data.path,
+                filename: data.path.split("/").pop(),
+                mime: data.mime,
+                height: data.height,
+                width: data.width,
+            })
+        } else {
+            this.props.onRequestClose()
+        }
+    }
+
+    /***
+     * 在图片编辑页面单击返回按钮
+     * @private
+     */
+    _onPressImageEditBack = () => {
+        this.setState({
+            imageEdit: false,
+            showCamera: true
+        })
     }
 
     render() {
@@ -300,9 +358,11 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                                     <TouchableOpacity style={styles.pressBtn}
                                                       {...touchProps}>
                                         <View style={styles.counter}>
-                                            <View style={[styles.counterContent,{ width:this.contentWidth ,
+                                            <View style={[styles.counterContent, {
+                                                width: this.contentWidth,
                                                 height: this.contentWidth,
-                                                borderRadius: this.contentWidth/2}]}/>
+                                                borderRadius: this.contentWidth / 2
+                                            }]}/>
                                         </View>
                                     </TouchableOpacity>
                                 </AnimatedCircleProgress>
@@ -311,7 +371,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                         </View>
                     </View>
                     <SafeAreaView style={styles.safeAreaToolBar}>
-                        <View style={[styles.toolBar,this.props.headerStyle]}>
+                        <View style={[styles.toolBar, this.props.headerStyle]}>
                             <TouchableOpacity onPress={this.switchCamera}>
                                 <Icon name="camera-party-mode" color="#fff" size={30}/>
                             </TouchableOpacity>
@@ -323,6 +383,12 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                             </TouchableOpacity>
                         </View>
                     </SafeAreaView>
+                    <ImageEditModal visible={this.state.imageEdit}
+                                    onRequestClose={this._onImageEditResultHanlde}
+                                    onPressBack={this._onPressImageEditBack}
+                                    path={this.editImagePath}
+                                    sourceType={ImageSourceEnum.camera}
+                                    transition={TransitionType.horizontal}/>
                 </View>
             </PageModal>
         )
