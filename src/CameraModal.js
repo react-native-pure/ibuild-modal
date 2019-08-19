@@ -90,9 +90,11 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
 
         this.close = () => {
             this.setState({
-                progress: 0
+                progress: 0,
+            },()=>{
+                this.props.onRequestClose()
             })
-            this.props.onRequestClose()
+
         }
 
         this.switchCamera = () => {
@@ -137,7 +139,8 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         this.onHidden = () => {
             this.props.onHidden && this.props.onHidden()
             this.setState({
-                showCamera: false
+                showCamera: false,
+                showContainer:true
             })
         }
 
@@ -146,7 +149,8 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             flashMode: RNCamera.Constants.FlashMode.auto,
             progress: 0,
             showCamera: false,
-            imageEdit: false
+            imageEdit: false,
+            showContainer:true
         }
     }
 
@@ -288,6 +292,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         return ''
     }
 
+
     /**
      * 图片编辑结构处理
      * @param data
@@ -295,20 +300,26 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
      */
     _onImageEditResultHanlde = ( data:ImagePickerResult | null ) => {
         this.setState({
-            imageEdit:false
+            imageEdit:false,
+            showContainer:false
+        },()=>{
+            setTimeout(()=>{
+                if (data) {
+                    this.props.onRequestClose({
+                        path: data.path,
+                        filename: data.path.split("/").pop(),
+                        mime: data.mime,
+                        height: data.height,
+                        width: data.width,
+                    })
+                } else {
+                    this.props.onRequestClose()
+                }
+            },300)
         })
-        if (data) {
-            this.props.onRequestClose({
-                path: data.path,
-                filename: data.path.split("/").pop(),
-                mime: data.mime,
-                height: data.height,
-                width: data.width,
-            })
-        } else {
-            this.props.onRequestClose()
-        }
     }
+
+
 
     /***
      * 在图片编辑页面单击返回按钮
@@ -337,7 +348,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                        onHidden={this.onHidden}
                        hiddenNavBar={true}
                        transition={TransitionType.vertical}>
-                <View style={styles.container}>
+                {this.state.showContainer   && <View style={styles.container}>
                     {this.state.showCamera && <RNCamera
                         ref={ref => this.camera = ref}
                         type={this.state.cameraType}
@@ -383,13 +394,13 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                             </TouchableOpacity>
                         </View>
                     </SafeAreaView>
-                    <ImageEditModal visible={this.state.imageEdit}
-                                    onRequestClose={this._onImageEditResultHanlde}
-                                    onPressBack={this._onPressImageEditBack}
-                                    path={this.editImagePath}
-                                    sourceType={ImageSourceEnum.camera}
-                                    transition={TransitionType.horizontal}/>
-                </View>
+                </View>}
+                <ImageEditModal visible={this.state.imageEdit}
+                                onRequestClose={this._onImageEditResultHanlde}
+                                onPressBack={this._onPressImageEditBack}
+                                path={this.editImagePath}
+                                sourceType={ImageSourceEnum.camera}
+                                transition={TransitionType.horizontal}/>
             </PageModal>
         )
     }
