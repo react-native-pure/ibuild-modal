@@ -21,7 +21,7 @@ export type ImageListPickerData = {
     /**
      * 图片/视频url地址
      */
-    url: String,
+    url: string,
 
     /**
      * 数据源类型
@@ -31,15 +31,21 @@ export type ImageListPickerData = {
     /**
      * 视频封面图地址
      */
-    coverImageUrl?: String,
+    coverImageUrl?: string,
 }
 
 
 export type ModalProps = {
-    visible: Boolean,
+    visible: boolean,
     onRequestClose: (value?: any) => void,
     onShown?:()=>void,
+    /**
+     * 关闭动画执行完成后
+     */
     onHidden?:()=>void,
+    /**
+     * 关闭动画执行前
+     */
     onWillHidden?:()=>void,
 }
 
