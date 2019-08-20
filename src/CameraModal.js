@@ -255,7 +255,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                     this.setState({
                         progress: 0
                     })
-                    this.props.onError(err)
+                    this.props.onError && this.props.onError(err)
 
                 })
             });
@@ -319,6 +319,16 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         })
     }
 
+    _onEidtError = (error)=>{
+        this.setState({
+            imageEdit:false,
+            showContainer:false
+        },()=>{
+            setTimeout(()=>{
+                this.props.onError && this.props.onError()
+            },300)
+        })
+    }
 
 
     /***
@@ -331,6 +341,8 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             showCamera: true
         })
     }
+
+
 
     render() {
         const touchProps = {}
@@ -400,7 +412,9 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                                 onPressBack={this._onPressImageEditBack}
                                 path={this.editImagePath}
                                 sourceType={ImageSourceEnum.camera}
-                                transition={TransitionType.horizontal}/>
+                                transition={TransitionType.horizontal}
+                                onError={this._onEidtError}
+                />
             </PageModal>
         )
     }

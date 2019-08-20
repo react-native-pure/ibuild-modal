@@ -39,7 +39,8 @@ export type ModalProps = {
     visible: Boolean,
     onRequestClose: (value?: any) => void,
     onShown?:()=>void,
-    onHidden?:()=>void
+    onHidden?:()=>void,
+    onWillHidden?:()=>void,
 }
 
 export type ImagePickerResult = {

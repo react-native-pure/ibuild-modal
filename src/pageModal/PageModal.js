@@ -164,6 +164,7 @@ export default class PageModal extends PureComponent<PageModalProps> {
         if (!this._mounted) {
             return
         }
+        this.props.onWillHidden && this.props.onWillHidden()
         let translateY = this.showTranslateY;
         let translateX = this.showTranslateX;
 
