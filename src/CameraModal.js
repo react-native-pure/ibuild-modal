@@ -21,6 +21,8 @@ import {ImagePickerResult} from '../config/Types'
 import type {ModalProps} from "../config/Types";
 import update from 'immutability-helper'
 import ImageEditModal from "./ImageEditModal";
+import Permissions from "react-native-permissions";
+import toast from "../../../../libs/toast";
 
 export type CameraProps = {
     type:$Values<typeof ImagePickerMediaEnum>,
@@ -91,7 +93,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         this.close = () => {
             this.setState({
                 progress: 0,
-            },()=>{
+            }, () => {
                 this.props.onRequestClose()
             })
 
@@ -131,8 +133,10 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         }
         this.onShown = () => {
             this.props.onShow && this.props.onShow()
-            this.setState({
-                showCamera: true
+            this._permissionCheck(() => {
+                this.setState({
+                    showCamera: true
+                })
             })
         }
 
@@ -140,7 +144,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             this.props.onHidden && this.props.onHidden()
             this.setState({
                 showCamera: false,
-                showContainer:true
+                showContainer: true
             })
         }
 
@@ -150,9 +154,21 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             progress: 0,
             showCamera: false,
             imageEdit: false,
-            showContainer:true
+            showContainer: true
         }
     }
+
+    _permissionCheck = ( callBack = () => {} ) => {
+        Permissions.request("camera").then(( response ) => {
+            // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
+            if (response !== 'authorized') {
+                this.props.onError && this.props.onError(new Error("'相机权限没打开,请在手机的“设置”选项中,允许访问您的摄像头和麦克风"))
+            } else {
+                callBack()
+            }
+        })
+    }
+
 
     get videoEnable() {
         return this.props.type !== ImagePickerMediaEnum.photo
@@ -180,23 +196,27 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
     async takePicture() {
         //TODO:fixOrientation:true
         const options = {quality: 1, base64: false, forceUpOrientation: true, fixOrientation: true};
-        const data = await this.camera.takePictureAsync(options);
+        try {
+            const data = await this.camera.takePictureAsync(options);
 
-        const file = {
-            path: data.uri,
-            filename: data.uri.split("/").pop(),
-            mime: "image/" + (data.uri.split("/").pop()).split(".").pop(),
-            height: data.height,
-            width: data.width,
-        }
-        if (this.props.editImage) {
-            this.editImageInfo = file
-            this.setState({
-                imageEdit: true,
-                showCamera: false
-            })
-        } else {
-            this.props.onRequestClose(file)
+            const file = {
+                path: data.uri,
+                filename: data.uri.split("/").pop(),
+                mime: "image/" + (data.uri.split("/").pop()).split(".").pop(),
+                height: data.height,
+                width: data.width,
+            }
+            if (this.props.editImage) {
+                this.editImageInfo = file
+                this.setState({
+                    imageEdit: true,
+                    showCamera: false
+                })
+            } else {
+                this.props.onRequestClose(file)
+            }
+        } catch (e) {
+            this.props.onError && this.props.onError(e)
         }
     }
 
@@ -300,10 +320,10 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
      */
     _onImageEditResultHanlde = ( data:ImagePickerResult | null ) => {
         this.setState({
-            imageEdit:false,
-            showContainer:false
-        },()=>{
-            setTimeout(()=>{
+            imageEdit: false,
+            showContainer: false
+        }, () => {
+            setTimeout(() => {
                 if (data) {
                     this.props.onRequestClose({
                         path: data.path,
@@ -315,18 +335,18 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                 } else {
                     this.props.onRequestClose()
                 }
-            },300)
+            }, 300)
         })
     }
 
-    _onEidtError = (error)=>{
+    _onEidtError = ( error ) => {
         this.setState({
-            imageEdit:false,
-            showContainer:false
-        },()=>{
-            setTimeout(()=>{
-                this.props.onError && this.props.onError()
-            },300)
+            imageEdit: false,
+            showContainer: false
+        }, () => {
+            setTimeout(() => {
+                this.props.onError && this.props.onError(error)
+            }, 300)
         })
     }
 
@@ -341,7 +361,6 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             showCamera: true
         })
     }
-
 
 
     render() {
@@ -360,7 +379,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                        onHidden={this.onHidden}
                        hiddenNavBar={true}
                        transition={TransitionType.vertical}>
-                {this.state.showContainer   && <View style={styles.container}>
+                {this.state.showContainer && <View style={styles.container}>
                     {this.state.showCamera && <RNCamera
                         ref={ref => this.camera = ref}
                         type={this.state.cameraType}
@@ -421,13 +440,13 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
 
     async componentDidMount() {
         //申请视频的录音权限
-        try {
-            await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, {
-                title: "申请使用录音权限",
-                message: "云筑智联需要使用您的录音设备"
-            });
-        } catch (ex) {
-        }
+        // try {
+        //     await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, {
+        //         title: "申请使用录音权限",
+        //         message: "云筑智联需要使用您的录音设备"
+        //     });
+        // } catch (ex) {
+        // }
     }
 }
 
