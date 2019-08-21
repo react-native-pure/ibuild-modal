@@ -340,7 +340,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             setTimeout(() => {
                 if (data) {
                     this.props.onRequestClose({
-                        path: data.path.replace("file://", ""),
+                        path: data.path,
                         filename: data.path.split("/").pop(),
                         mime: data.mime,
                         height: data.height,
