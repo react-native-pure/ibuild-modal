@@ -22,7 +22,8 @@ import type {ModalProps} from "../config/Types";
 import update from 'immutability-helper'
 import ImageEditModal from "./ImageEditModal";
 import Permissions from "react-native-permissions";
-import toast from "../../../../libs/toast";
+import {compressImageAsync} from "@ibuild-community/react-native-image-utils";
+import RNFetchBlob from "rn-fetch-blob";
 
 export type CameraProps = {
     type:$Values<typeof ImagePickerMediaEnum>,
@@ -53,7 +54,10 @@ export type CameraProps = {
     /**
      * 图片编辑，默认false
      */
-    editImage?:boolean
+    editImage?:boolean,
+
+    /**图片质量，单位KB*/
+    pictureQuality?:number,
 
 } & ModalProps
 
@@ -66,7 +70,8 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         maxDur: 20,
         buttonRaduis: 40,
         buttonMargin: 5,
-        progressWidth: 4
+        progressWidth: 4,
+        pictureQuality: 400
     }
 
     constructor( props ) {
@@ -158,7 +163,8 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         }
     }
 
-    _permissionCheck = ( callBack = () => {} ) => {
+    _permissionCheck = ( callBack = () => {
+    } ) => {
         Permissions.request("camera").then(( response ) => {
             // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
             if (response !== 'authorized') {
@@ -192,6 +198,57 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
     }
 
 
+    /**
+     * 获取有效的文件本地路径
+     * @param path
+     * @returns {String|string}
+     */
+    getfullFilePath = ( path:string ) => {
+        if (!path.startsWith("file://")) {
+            path = "file://" + path
+        }
+        return path;
+    }
+
+
+    getCompressFilePath = ( path:string ) => {
+        if (Platform.OS === "android") {
+            path = path.replace("file://", "");
+        }
+        return path;
+    }
+
+
+    /***
+     * 压缩图片
+     * @param file
+     * @returns {Promise<null|*>}
+     */
+    compressImageHandle = async ( file ) => {
+        const path = this.getCompressFilePath(file.path)
+        try {
+            const compressedResult = await compressImageAsync([path], this.props.pictureQuality);
+            if (compressedResult && compressedResult.length > 0) {
+                const sheetImage = compressedResult[0].data
+                //删除原始图纸
+                if (this.getfullFilePath(sheetImage.path) !== file.path) {
+                    await RNFetchBlob.fs.unlink(file.path);
+                }
+
+                file.path = this.getfullFilePath(sheetImage.path)
+                file.width = sheetImage.width
+                file.height = sheetImage.height
+                file.fileSize = sheetImage.size
+                file.fileName = sheetImage.name
+            }
+            return {success: true, file: file}
+        } catch (e) {
+
+            return {success: false, error: e}
+        }
+    }
+
+
     //拍摄照片
     async takePicture() {
         //TODO:fixOrientation:true
@@ -207,11 +264,16 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                 width: data.width,
             }
             if (this.props.editImage) {
-                this.editImageInfo = file
-                this.setState({
-                    imageEdit: true,
-                    showCamera: false
-                })
+                const result = await this.compressImageHandle(file)
+                if (result.success) {
+                    this.editImageInfo = result.file
+                    this.setState({
+                        imageEdit: true,
+                        showCamera: false
+                    })
+                } else {
+                    this.props.onError && this.props.onError(result.error)
+                }
             } else {
                 this.props.onRequestClose(file)
             }
@@ -233,7 +295,6 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                 progress: {$set: this.state.progress + progress}
             })
             this.setState(nextState, () => {
-                console.log("progress:", this.state.progress, this.duration)
                 setTimeout(this.startProgressTimer.bind(this, startTime), this.duration);
             })
         }
@@ -318,7 +379,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
      * @param data
      * @private
      */
-    _onImageEditResultHanlde = ( data:ImagePickerResult | null ) => {
+    _onImageEditResultHanlde = async ( data:ImagePickerResult | null ) => {
         this.setState({
             imageEdit: false,
             showContainer: false
@@ -326,7 +387,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             setTimeout(() => {
                 if (data) {
                     this.props.onRequestClose({
-                        path: data.path,
+                        path: data.path.replace("file://", ""),
                         filename: data.path.split("/").pop(),
                         mime: data.mime,
                         height: data.height,
