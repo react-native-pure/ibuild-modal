@@ -40,7 +40,8 @@
     "@ibuild-community/react-native-applet": "*",
     "@ibuild-community/react-native-share": "*",
     "@ibuild-community/react-native-wheel-picker": "*",
-    "react-native-video": ">=4.4.1"
+    "react-native-video": ">=4.4.1",
+    "react-native-permissions": "*"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",

@@ -22,8 +22,6 @@ import type {ModalProps} from "../config/Types";
 import update from 'immutability-helper'
 import ImageEditModal from "./ImageEditModal";
 import Permissions from "react-native-permissions";
-import {compressImageAsync} from "@ibuild-community/react-native-image-utils";
-import RNFetchBlob from "rn-fetch-blob";
 
 export type CameraProps = {
     type:$Values<typeof ImagePickerMediaEnum>,
@@ -56,8 +54,18 @@ export type CameraProps = {
      */
     editImage?:boolean,
 
-    /**图片质量，单位KB*/
-    pictureQuality?:number,
+
+    /**
+     * 相机设置,参考http://cmisgitlab01/ibuild-app/react-native-camera/blob/master/docs/RNCamera.md
+     */
+    cameraOption:Object,
+
+
+    /***
+     * 拍摄视频配置
+     */
+    videoOption:Object
+
 
 } & ModalProps
 
@@ -71,7 +79,8 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         buttonRaduis: 40,
         buttonMargin: 5,
         progressWidth: 4,
-        pictureQuality: 400
+        cameraOption:{},
+        videoOption:{}
     }
 
     constructor( props ) {
@@ -198,64 +207,12 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
     }
 
 
-    /**
-     * 获取有效的文件本地路径
-     * @param path
-     * @returns {String|string}
-     */
-    getfullFilePath = ( path:string ) => {
-        if (!path.startsWith("file://")) {
-            path = "file://" + path
-        }
-        return path;
-    }
-
-
-    getCompressFilePath = ( path:string ) => {
-        if (Platform.OS === "android") {
-            path = path.replace("file://", "");
-        }
-        return path;
-    }
-
-
-    /***
-     * 压缩图片
-     * @param file
-     * @returns {Promise<null|*>}
-     */
-    compressImageHandle = async ( file ) => {
-        const path = this.getCompressFilePath(file.path)
-        try {
-            const compressedResult = await compressImageAsync([path], this.props.pictureQuality);
-            if (compressedResult && compressedResult.length > 0) {
-                const sheetImage = compressedResult[0].data
-                //删除原始图纸
-                if (this.getfullFilePath(sheetImage.path) !== file.path) {
-                    await RNFetchBlob.fs.unlink(file.path);
-                }
-
-                file.path = this.getfullFilePath(sheetImage.path)
-                file.width = sheetImage.width
-                file.height = sheetImage.height
-                file.fileSize = sheetImage.size
-                file.fileName = sheetImage.name
-            }
-            return {success: true, file: file}
-        } catch (e) {
-
-            return {success: false, error: e}
-        }
-    }
-
-
     //拍摄照片
     async takePicture() {
         //TODO:fixOrientation:true
-        const options = {quality: 1, base64: false, forceUpOrientation: true, fixOrientation: true};
+        const options = {exif:false,quality: 1, base64: false, forceUpOrientation: true, fixOrientation: true,...this.props.cameraOption};
         try {
             const data = await this.camera.takePictureAsync(options);
-
             const file = {
                 path: data.uri,
                 filename: data.uri.split("/").pop(),
@@ -264,16 +221,11 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                 width: data.width,
             }
             if (this.props.editImage) {
-                const result = await this.compressImageHandle(file)
-                if (result.success) {
-                    this.editImageInfo = result.file
-                    this.setState({
-                        imageEdit: true,
-                        showCamera: false
-                    })
-                } else {
-                    this.props.onError && this.props.onError(result.error)
-                }
+                this.editImageInfo = file
+                this.setState({
+                    imageEdit: true,
+                    showCamera: false
+                })
             } else {
                 this.props.onRequestClose(file)
             }
@@ -312,7 +264,8 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                 let option = {
                     maxDuration: this.props.maxDur,
                     //质量设置为480P,否则android会发生crash
-                    quality: RNCamera.Constants.VideoQuality['480p']
+                    quality: RNCamera.Constants.VideoQuality['480p'],
+                    ...this.props.videoOption
                 }
                 if (Platform.OS === "ios") {
                     option.codec = RNCamera.Constants.VideoCodec.H264
