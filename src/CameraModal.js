@@ -4,13 +4,12 @@
  */
 import React from 'react'
 import {
-    PermissionsAndroid,
     Platform,
     StyleSheet,
     Text,
     TouchableOpacity,
     View,
-    SafeAreaView, Animated
+    SafeAreaView,
 } from 'react-native'
 import {RNCamera} from '@ibuild-community/react-native-camera';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -64,7 +63,22 @@ export type CameraProps = {
     /***
      * 拍摄视频配置
      */
-    videoOption:Object
+    videoOption:Object,
+
+    /***
+     * 隐藏水印
+     */
+    hiddenWaterMark?:boolean,
+
+    /***
+     * 隐藏文字编辑
+     */
+    hiddenTextrMark?:boolean,
+
+    /**
+     * 不可编辑图片,true时，水印和文字也不可以添加
+     */
+    disableEdit?:boolean
 
 
 } & ModalProps
@@ -177,7 +191,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         Permissions.request("camera").then(( response ) => {
             // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
             if (response !== 'authorized') {
-                this.props.onError && this.props.onError(new Error("相机权限没打开,请在手机的“设置”选项中,允许访问您的摄像头和麦克风"))
+                this.props.onError && this.props.onError(new Error("'相机权限没打开,请在手机的“设置”选项中,允许访问您的摄像头和麦克风"))
             } else {
                 callBack()
             }
@@ -447,6 +461,9 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                                 sourceType={ImageSourceEnum.camera}
                                 transition={TransitionType.horizontal}
                                 onError={this._onEidtError}
+                                hiddenWaterMark={this.props.hiddenWaterMark}
+                                hiddenTextrMark={this.props.hiddenTextrMark}
+                                disableEdit={this.props.disableEdit}
                 />
             </PageModal>
         )

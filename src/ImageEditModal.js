@@ -33,6 +33,21 @@ type ImageEditModalProps = {
      */
     transition: $Values<typeof TransitionType>,
 
+    /***
+     * 隐藏水印
+     */
+    hiddenWaterMark?:boolean,
+
+    /***
+     * 隐藏文字编辑
+     */
+    hiddenTextrMark?:boolean,
+
+    /**
+     * 不可编辑图片,true时，水印和文字也不可以添加
+     */
+    disableEdit?:boolean
+
 } & ModalProps;
 
 
@@ -108,6 +123,9 @@ export default class ImageEditModal extends PureComponent <ImageEditModalProps> 
                                        }}
                                        onToolBarWillHidde={this.hiddenNavBar}
                                        onToolBarWillShow={this.showNavBar}
+                                       hiddenWaterMark={this.props.hiddenWaterMark}
+                                       hiddenTextrMark={this.props.hiddenTextrMark}
+                                       disableEdit={this.props.disableEdit}
                         />
                     </NaVSafeAreaView>
                     <SafeAreaView style={styles.navBarSafeArea}>
