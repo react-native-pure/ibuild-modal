@@ -40,7 +40,7 @@ export type GalleryViewerModalProps = {
     showIndicator: boolean,
     onChange?: (index: number) => void,
     onError?: (index:number,error: Error) => void,
-} & ModalProps
+} & PageModalProps
 
 export default class GalleryViewerModal extends React.PureComponent <GalleryViewerModalProps> {
 
@@ -70,6 +70,16 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         this.renderSpinder = this.renderSpinder.bind(this)
     }
 
+    onLoadStart(index){
+        this.setState(update(this.state, {
+            hiddenIndicator: {
+                [index]: {$set: false}
+            },
+            errors:{
+                [index]: {$set: null}
+            }
+        }))
+    }
     onLoad(index) {
         this.setState(update(this.state, {
             hiddenIndicator: {
@@ -159,7 +169,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
 
     renderItem(item, index) {
         if(this.state.errors[index] && this.props.renderError){
-           return this.props.renderError(index,this.state.errors[index])
+            return this.props.renderError(index,this.state.errors[index])
         }
         if (item.type === GalleryFileType.image) {
             return (
@@ -167,7 +177,10 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                     source={item.source}
                     style={item.style}
                     resizeMode={'contain'}
-                    onLoad={() => {
+                    onLoadStart={()=>{
+                        this.onLoadStart(index)
+                    }}
+                    onLoadEnd={() => {
                         this.onLoad(index)
                     }}
                     onError={(error)=>{
@@ -205,7 +218,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                        hiddenNavBar={true}
                        onHidden={this.props.onHidden}
                        onShown={this.props.onShown}
-                       transition={TransitionType.horizontal}
+                       transition={this.props.transition}
                        onRequestClose={this.props.onRequestClose}>
                 <SafeAreaView style={[{flex: 1, backgroundColor: '#000'}, this.props.style]}>
                     <GalleryViewer dataSource={this.props.data}

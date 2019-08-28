@@ -43,6 +43,7 @@ export default class CachedImage extends React.PureComponent <CachedImageProps>{
         }
         else{
             delete props.source;
+            props.onLoadStart && props.onLoadStart()
         }
         return <Image {...props}></Image>
     }
