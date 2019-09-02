@@ -27,6 +27,9 @@ import {SafeAreaView} from 'react-navigation'
 
 const VideoPlayer = withSimpleControl()(Video)
 
+type Action = {
+
+}
 
 export type GalleryViewerModalProps = {
     data: Array<ImageListPickerData>,
@@ -40,6 +43,12 @@ export type GalleryViewerModalProps = {
     showIndicator: boolean,
     onChange?: (index: number) => void,
     onError?: (index:number,error: Error) => void,
+    longPressActions?:(action:Array<Action>)=>void,
+    /***
+     * 视频自动播放
+     */
+    videoAutoPlay?:boolean,
+
 } & PageModalProps
 
 export default class GalleryViewerModal extends React.PureComponent <GalleryViewerModalProps> {
@@ -51,6 +60,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         data: [],
         visible: false,
         showIndicator: true,
+        videoAutoPlay:false,
         onRequestClose: () => {
         },
     };
@@ -191,7 +201,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
             )
         } else if (item.type == GalleryFileType.video) {
             return (
-                <VideoPlayer paused={true}
+                <VideoPlayer paused={!this.props.videoAutoPlay}
                              poster={item.coverImageUrl}
                              source={{uri: item.url}}
                              style={item.style}
