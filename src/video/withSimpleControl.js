@@ -79,7 +79,7 @@ export default function (option: VideoSimpleControlOption = {}) {
                     readyWidth: 0,
                     readyHeight: 0,
                     status: !props.paused ? VideoPlayStatus.play : VideoPlayStatus.stop,
-                    showControl: true,
+                    showControl: !props.paused ?false:true,
                 };
             }
 
