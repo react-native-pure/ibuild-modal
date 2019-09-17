@@ -22,12 +22,13 @@ import NavigationHeader from './pageModal/NavigationHeader';
 import update from "immutability-helper";
 import GalleryViewer from '@react-native-pure/gallery';
 import {GalleryFileType} from '../config/Types';
-import type {ImageListPickerData, ModalProps} from "../config/Types";
+import type {ActionSheetModalButton, ImageListPickerData, ModalProps} from "../config/Types";
 import {SafeAreaView} from 'react-navigation'
+import ActionSheetModal from "./ActionSheetModal";
 
 const VideoPlayer = withSimpleControl()(Video)
 
-type Action = {
+type Action = ActionSheetModalButton &{
 
 }
 
@@ -44,10 +45,16 @@ export type GalleryViewerModalProps = {
     onChange?: (index: number) => void,
     onError?: (index:number,error: Error) => void,
     longPressActions?:(action:Array<Action>)=>void,
+
+    /***
+     * 长按的时长，单位毫秒
+     */
+    longPressThreshold?:number,
     /***
      * 视频自动播放
      */
     videoAutoPlay?:boolean,
+
 
 } & PageModalProps
 
@@ -71,7 +78,8 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         this.state = {
             hiddenIndicator: [],
             errors:[],
-            currentIndex: props.initIndex
+            currentIndex: props.initIndex,
+            showLongPressAction:false
 
         }
         this.renderFooter = this.renderFooter.bind(this)
@@ -236,6 +244,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                                    ref={(refs) => {
                                        this.imageViewer = refs
                                    }}
+                                   longPressThreshold={this.props.longPressThreshold}
                                    onChange={(index) => {
                                        this.props.onChange && this.props.onChange(index)
                                        if (this.videoViews.get(this.state.currentIndex)) {
@@ -253,9 +262,22 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                                    renderFooter={this.renderFooter}
                                    renderHeader={this.renderHeader}
                                    renderItem={this.renderItem}
-                                   renderIndicator={this.renderSpinder}/>
+                                   renderIndicator={this.renderSpinder}
+                                   onLongPress={this.props.longPressActions?()=>{
+                                       this.setState({
+                                           showLongPressAction:true
+                                       })
+                                   }:null}
+                    />
                     {this.renderNavBar()}
                 </SafeAreaView>
+                <ActionSheetModal buttons={this.props.longPressActions}
+                                  visible={this.state.showLongPressAction}
+                                  onRequestClose={()=>{
+                                      this.setState({
+                                          showLongPressAction:false
+                                      })
+                                  }}/>
             </PageModal>
         )
     }

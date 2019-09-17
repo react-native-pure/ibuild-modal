@@ -58,7 +58,7 @@
     "react-native": ">=0.47"
   },
   "dependencies": {
-
+    "@ibuild-community/react-native-face": "git+ssh://git@cmisgitlab01:ibuild-app/react-native-face.git#develop"
   },
   "config": {
     "commitizen": {

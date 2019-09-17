@@ -18,7 +18,7 @@ import type {ActionSheetModalButton, ModalProps} from "../../config/Types";
 type ActionSheetModalProps = {
     title?:string,
     buttons:Array<ActionSheetModalButton>,
-    cancelButton:?ActionSheetModalButton,
+    cancelButton?:?ActionSheetModalButton,
 } & ModalProps;
 
 

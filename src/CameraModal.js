@@ -191,7 +191,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         Permissions.request("camera").then(( response ) => {
             // Response is one of: 'authorized', 'denied', 'restricted', or 'undetermined'
             if (response !== 'authorized') {
-                this.props.onError && this.props.onError(new Error("'相机权限没打开,请在手机的“设置”选项中,允许访问您的摄像头和麦克风"))
+                this.props.onError && this.props.onError(new Error("'请前往“设置”开启您的摄像头和麦克风使用权限"))
             } else {
                 callBack()
             }
