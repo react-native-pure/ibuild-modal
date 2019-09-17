@@ -1,7 +1,5 @@
 import React, {Component} from "react"
-import {StyleSheet, Text, TouchableOpacity, View, ActionSheetIOS} from "react-native"
-import PopModal from '../PopModal';
-import {SafeAreaView} from 'react-navigation'
+import {ActionSheetIOS} from "react-native"
 import {ActionSheetCancelButtonEnum} from "../../config/Enums";
 import type {ActionSheetModalButton, ModalProps} from "../../config/Types";
 
@@ -18,7 +16,7 @@ import type {ActionSheetModalButton, ModalProps} from "../../config/Types";
 type ActionSheetModalProps = {
     title?:string,
     buttons:Array<ActionSheetModalButton>,
-    cancelButton?:?ActionSheetModalButton,
+    cancelButton?:ActionSheetModalButton,
 } & ModalProps;
 
 

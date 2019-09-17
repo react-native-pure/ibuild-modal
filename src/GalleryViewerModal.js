@@ -17,20 +17,17 @@ import withSimpleControl from './video/withSimpleControl';
 import Video from 'react-native-video';
 import CachedImage from './basic/CachedImage';
 import PageModal from './pageModal/PageModal';
-import {TransitionType} from '../config/Enums';
 import NavigationHeader from './pageModal/NavigationHeader';
 import update from "immutability-helper";
 import GalleryViewer from '@react-native-pure/gallery';
 import {GalleryFileType} from '../config/Types';
-import type {ActionSheetModalButton, ImageListPickerData, ModalProps} from "../config/Types";
+import type {ActionSheetModalButton, ImageListPickerData} from "../config/Types";
 import {SafeAreaView} from 'react-navigation'
 import ActionSheetModal from "./ActionSheetModal";
 
 const VideoPlayer = withSimpleControl()(Video)
 
-type Action = ActionSheetModalButton &{
-
-}
+type Action = ActionSheetModalButton
 
 export type GalleryViewerModalProps = {
     data: Array<ImageListPickerData>,

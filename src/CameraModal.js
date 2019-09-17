@@ -129,13 +129,10 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
 
         this.switchCamera = () => {
             let cameraType = this.state.cameraType;
-            let cameraTypeText = "";
             if (cameraType === RNCamera.Constants.Type.back) {
                 cameraType = RNCamera.Constants.Type.front;
-                cameraTypeText = "前";
             } else {
                 cameraType = RNCamera.Constants.Type.back;
-                cameraTypeText = "后";
             }
             this.setState({
                 cameraType: cameraType
@@ -143,17 +140,13 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         }
         this.switchFlash = () => {
             let newFlashMode;
-            let flashModeText = "";
             const {auto, on, off} = RNCamera.Constants.FlashMode;
             if (this.state.flashMode === auto) {
                 newFlashMode = on;
-                flashModeText = "开";
             } else if (this.state.flashMode === on) {
                 newFlashMode = off;
-                flashModeText = "关";
             } else if (this.state.flashMode === off) {
                 newFlashMode = auto;
-                flashModeText = "自动";
             }
             this.setState({
                 flashMode: newFlashMode,

@@ -22,7 +22,7 @@ type ActionSheetModalProps = {
     cancelType?:$Values<typeof ActionSheetCancelButtonEnum>,
     titleStyle?:any,
     buttonStyle?:any,
-    cancelButton:?ActionSheetModalButton,
+    cancelButton?:ActionSheetModalButton,
 } & ModalProps;
 
 
