@@ -240,7 +240,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                              controlRef={refs => {
                                  this.videoViews.set(index, refs)
                              }}
-                             onError={(error)=>{
+                             onError={({error})=>{
                                  this.props.onError && this.props.onError(index,error)
                              }}
                 />
