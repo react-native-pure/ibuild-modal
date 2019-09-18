@@ -27,7 +27,9 @@ import ActionSheetModal from "./ActionSheetModal";
 
 const VideoPlayer = withSimpleControl()(Video)
 
-type Action = ActionSheetModalButton
+type Action = ActionSheetModalButton & {
+    onPress:(data:ImageListPickerData)=>{}
+}
 
 export type GalleryViewerModalProps = {
     data: Array<ImageListPickerData>,
@@ -85,6 +87,22 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         this.renderSpinder = this.renderSpinder.bind(this)
     }
 
+    get longPressActions(){
+        if(this.props.longPressActions){
+            return this.props.longPressActions.map(item=>{
+                return {
+                    ...item,
+                    onPress:()=>{
+                        this.setState({
+                            showLongPressAction:false
+                        })
+                        item.onPress && item.onPress(this.props.data[this.state.currentIndex])
+                    }
+                }
+            })
+        }
+        return []
+    }
     onLoadStart(index){
         this.setState(update(this.state, {
             hiddenIndicator: {
@@ -221,7 +239,11 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                              }}
                              controlRef={refs => {
                                  this.videoViews.set(index, refs)
-                             }}/>
+                             }}
+                             onError={(error)=>{
+                                 this.props.onError && this.props.onError(index,error)
+                             }}
+                />
             );
         }
         return null
@@ -268,7 +290,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                     />
                     {this.renderNavBar()}
                 </SafeAreaView>
-                <ActionSheetModal buttons={this.props.longPressActions}
+                <ActionSheetModal buttons={this.longPressActions}
                                   visible={this.state.showLongPressAction}
                                   onRequestClose={()=>{
                                       this.setState({

@@ -3,10 +3,12 @@
  * @author jean.h.ma
  */
 import * as React from "react"
-import {View, StyleSheet, ImageBackground, TouchableWithoutFeedback} from "react-native"
+import {View, StyleSheet, ImageBackground, TouchableWithoutFeedback,Dimensions} from "react-native"
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import Icon from "react-native-vector-icons/MaterialIcons"
 import merge from "deepmerge"
+
+const size = Dimensions.get("window")
 
 /**
  * 视频播放状态
@@ -23,6 +25,14 @@ const styles = StyleSheet.create({
     buttonContainer: {
         justifyContent: "center",
         alignItems: "center"
+    },
+    poster:{
+        flex:1,
+        width:size.width,
+        height:size.height,
+    },
+    posterImage:{
+        flex:1,
     }
 });
 
@@ -135,12 +145,9 @@ export default function (option: VideoSimpleControlOption = {}) {
                     props.resizeMode = "contain"
                 }
                 return (
-                    <View style={[styles.poster, this.props.style]}
+                    <View style={[styles.poster]}
                           onLayout={this._onReadyContainerLayout}>
-                        <ImageBackground style={[styles.posterImage, {
-                            width: this.state.readyWidth,
-                            height: this.state.readyHeight,
-                        }]} {...props}>
+                        <ImageBackground style={[styles.posterImage]} {...props}>
                             {this._renderPlayButton()}
                         </ImageBackground>
                     </View>
@@ -177,7 +184,8 @@ export default function (option: VideoSimpleControlOption = {}) {
                                          else {
                                              onEnd && onEnd(...args);
                                          }
-                                     }}/>
+                                     }}
+                        />
                         {this._renderPlayButton()}
                     </View>
                 );
