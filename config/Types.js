@@ -32,6 +32,10 @@ export type ImageListPickerData = {
      * 视频封面图地址
      */
     coverImageUrl?: string,
+    /**
+     * 自定义数据
+     **/
+    customData?:any
 }
 
 

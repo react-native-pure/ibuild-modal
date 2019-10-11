@@ -32,17 +32,17 @@ type Action = ActionSheetModalButton & {
 }
 
 export type GalleryViewerModalProps = {
-    data: Array<ImageListPickerData>,
+    data: Array<ImageListPickerData> | ()=>Array<ImageListPickerData>,
     initIndex?: number,
     style?: Object,
     title?: string,
     renderFooter?: (index: number) => React.ReactElement<any>,
     renderHeader?: (index: number) => React.ReactElement<any>,
     renderIndicator?: (data: Object, index: number) => React.ReactElement<any> ,
-    renderError?:(index: number,error:Error) => React.ReactElement<any>,
+    renderError?:(index: number,error:Error,data:Object) => React.ReactElement<any>,
     showIndicator: boolean,
-    onChange?: (index: number) => void,
-    onError?: (index:number,error: Error) => void,
+    onChange?: (index: number,data:Object) => void,
+    onError?: (index:number,error: Error,data:Object) => void,
     longPressActions?:(action:Array<Action>)=>void,
 
     /***
@@ -202,7 +202,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
 
     renderItem(item, index) {
         if(this.state.errors[index] && this.props.renderError){
-            return this.props.renderError(index,this.state.errors[index])
+            return this.props.renderError(index,this.state.errors[index],item)
         }
         if (item.type === GalleryFileType.image) {
             return (
@@ -218,7 +218,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                     }}
                     onError={(error)=>{
                         this.onError(index,error)
-                        this.props.onError && this.props.onError(index,error)
+                        this.props.onError && this.props.onError(index,error,item)
                     }}
                 />
             )
@@ -265,7 +265,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                                    }}
                                    longPressThreshold={this.props.longPressThreshold}
                                    onChange={(index) => {
-                                       this.props.onChange && this.props.onChange(index)
+                                       this.props.onChange && this.props.onChange(index,this.props.data[index])
                                        if (this.videoViews.get(this.state.currentIndex)) {
                                            this.videoViews.get(this.state.currentIndex).stop && this.videoViews.get(this.state.currentIndex).stop()
                                        }
