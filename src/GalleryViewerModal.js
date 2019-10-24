@@ -11,7 +11,8 @@ import {
     View,
     Text,
     StyleSheet,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert
 } from 'react-native';
 import withSimpleControl from './video/withSimpleControl';
 import Video from 'react-native-video';
@@ -43,16 +44,13 @@ export type GalleryViewerModalProps = {
     showIndicator: boolean,
     onChange?: (index: number,data:Object) => void,
     onError?: (index:number,error: Error,data:Object) => void,
-    longPressActions?:(action:Array<Action>)=>void,
+    /**长按操作方法，设置该属性后支持长按手势*/
+    longPressActions?:Array<Action>,
 
     /***
      * 长按的时长，单位毫秒
      */
     longPressThreshold?:number,
-    /***
-     * 视频自动播放
-     */
-    videoAutoPlay?:boolean,
 
 
 } & PageModalProps
@@ -66,7 +64,6 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         data: [],
         visible: false,
         showIndicator: true,
-        videoAutoPlay:false,
         onRequestClose: () => {
         },
     };
@@ -137,7 +134,6 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
     }
 
     renderNavBar() {
-
         return (
             <View style={styles.navContainer}>
                 <NavigationHeader hiddenRight={true}
@@ -201,6 +197,9 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
     }
 
     renderItem(item, index) {
+        if(!this.props.visible){
+            return null
+        }
         if(this.state.errors[index] && this.props.renderError){
             return this.props.renderError(index,this.state.errors[index],item)
         }
@@ -224,7 +223,7 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
             )
         } else if (item.type == GalleryFileType.video) {
             return (
-                <VideoPlayer paused={!this.props.videoAutoPlay}
+                <VideoPlayer paused={!item.autoPlay}
                              poster={item.coverImageUrl}
                              source={{uri: item.url}}
                              style={item.style}
@@ -241,7 +240,12 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
                                  this.videoViews.set(index, refs)
                              }}
                              onError={({error})=>{
-                                 this.props.onError && this.props.onError(index,error)
+                                 if( this.props.onError){
+                                     this.props.onError(index,error)
+                                 }
+                                 else{
+                                     Alert.alert("播放失败，"+error.code)
+                                 }
                              }}
                 />
             );

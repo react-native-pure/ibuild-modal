@@ -52,7 +52,12 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
         const {cancelButton:{isDelete,text, onPress, textColor, textFontSize}={}} = this.props
         if (this.props.cancelType === ActionSheetCancelButtonEnum.delete || isDelete) {
             return (
-                <TouchableOpacity onPress={onPress?onPress:this.props.onRequestClose}>
+                <TouchableOpacity onPress={()=>{
+                    if(onPress){
+                        onPress()
+                    }
+                   this.props.onRequestClose()
+                }}>
                     <View
                         style={[styles.delete, this.props.buttonStyle]}>
                         <Text
@@ -62,7 +67,12 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
             );
         } else if (this.props.cancelType === ActionSheetCancelButtonEnum.cancel) {
             return (
-                <TouchableOpacity onPress={onPress?onPress:this.props.onRequestClose}>
+                <TouchableOpacity  onPress={()=>{
+                    if(onPress){
+                        onPress()
+                    }
+                    this.props.onRequestClose()
+                }}>
                     <View
                         style={[styles.delete, this.props.buttonStyle,]}>
                         <Text
@@ -94,6 +104,7 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
                                                          style={[styles.button, this.props.buttonStyle]}
                                                          onPress={() => {
                                                              button.onPress && button.onPress(index)
+                                                             this.props.onRequestClose()
                                                          }}>
                                     <Text
                                         style={[styles.buttonText, button.textFontSize ? {fontSize: button.textFontSize} : {}, button.textColor ? {color: button.textColor} : {}]}>{button.text}</Text>

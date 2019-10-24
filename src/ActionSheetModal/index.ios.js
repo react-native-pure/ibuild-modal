@@ -68,12 +68,14 @@ export default class ActionSheetModal extends Component<ActionSheetModalProps> {
                     (nextProps.cancelButton || nextProps.cancelType== ActionSheetCancelButtonEnum.delete || nextProps.cancelType === ActionSheetCancelButtonEnum.cancel)) {
                     if (nextProps.cancelButton) {
                         nextProps.cancelButton.onPress && nextProps.cancelButton.onPress()
+                        nextProps.onRequestClose()
                     } else {
                         nextProps.onRequestClose()
                     }
                 } else if (buttonIndex < this.props.buttons.length) {
                     const onPress = nextProps.buttons[buttonIndex].onPress
                     onPress && onPress()
+                    nextProps.onRequestClose()
                 }
             })
         }
