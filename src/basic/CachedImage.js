@@ -25,6 +25,7 @@ export default class CachedImage extends React.PureComponent <CachedImageProps>{
     }
 
     componentDidMount() {
+        this.props.onLoadStart && this.props.onLoadStart()
         fetchImage(this.props.source.uri)
             .then(uri=> {
                 this.setState({
@@ -42,9 +43,8 @@ export default class CachedImage extends React.PureComponent <CachedImageProps>{
             };
         }
         else{
-            delete props.source;
-            props.onLoadStart && props.onLoadStart()
+           delete props.source;
         }
-        return <Image {...props}></Image>
+        return <Image {...props}/>
     }
 }
