@@ -35,13 +35,13 @@ export function getFileExt(str) {
  * @return {Promise<*>}
  */
 export async function fetchImage(uri: String): String {
-    console.log(`下载图片:${uri}`);
+   // console.log(`下载图片:${uri}`);
     if (uri) {
         const path = getCacheImagePath(uri);
-        console.log(`文件路径:${path}`);
+     //   console.log(`文件路径:${path}`);
         const exists = await RNFetchBlob.fs.exists(path).catch(() => false);
         if (exists) {
-            console.log(`%c[缓存] ${uri}`, "background-color:yellow");
+     //       console.log(`%c[缓存] ${uri}`, "background-color:yellow");
             return `file://${path}`;
         }
         else {
@@ -54,9 +54,9 @@ export async function fetchImage(uri: String): String {
                     return `file://${path}`;
                 })
                 .catch(err => {
-                    const message = `图片${uri}下载失败:${err.message}`;
+             //       const message = `图片${uri}下载失败:${err.message}`;
                     // postError(message)
-                    console.log(`%c${message}`, "background-color:red")
+              //      console.log(`%c${message}`, "background-color:red")
                     return uri;
                 });
         }
