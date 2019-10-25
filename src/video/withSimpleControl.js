@@ -9,6 +9,7 @@ import Icon from "react-native-vector-icons/MaterialIcons"
 import merge from "deepmerge"
 import RNFetchBlob from "rn-fetch-blob"
 import md5 from "md5";
+import {DefaultAppletRootDir} from "@ibuild-community/react-native-applet";
 
 const size = Dimensions.get("window")
 
@@ -104,7 +105,7 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                 this._mount = true;
                 this.props.controlRef && this.props.controlRef(this);
                 /**自动播放*/
-                if(!this.props.paused){
+                if (!this.props.paused) {
                     this.checkHasLoad()
                 }
             }
@@ -121,14 +122,14 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                 return RNFetchBlob.fs.dirs.CacheDir + "/" + name + ".mp4"
             }
 
-            get source(){
-                if(this.isHttpUrl){
-                    return {uri:this.localFileFullPath}
+            get source() {
+                if (this.isHttpUrl) {
+                    return {uri: this.localFileFullPath}
                 }
                 return this.props.source
             }
 
-           get isHttpUrl(){
+            get isHttpUrl() {
                 return this.props.source && this.props.source.uri && this.props.source.uri.startsWith("http")
             }
 
@@ -140,7 +141,7 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                     if (exists) {
                         this.setState({
                             hasLoad: true,
-                            status:VideoPlayStatus.play
+                            status: VideoPlayStatus.play
                         })
                     } else {
                         RNFetchBlob
@@ -149,14 +150,21 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                             }).fetch('GET', this.props.source.uri).then(( res ) => {
                             this.setState({
                                 hasLoad: true,
-                                status:VideoPlayStatus.play
+                                status: VideoPlayStatus.play
                             })
-                        }).catch(( err ) => console.log('err', err))
+                        }).catch(( err ) => {
+                            RNFetchBlob.fs.unlink(this.localFileFullPath);
+                            this.setState({
+                                hasLoad: false,
+                                status: VideoPlayStatus.pause
+                            })
+                            this.props.onError && this.props.onError(err)
+                        })
                     }
                 } else {
                     this.setState({
                         hasLoad: true,
-                        status:VideoPlayStatus.play
+                        status: VideoPlayStatus.play
                     })
                 }
                 return true
@@ -239,7 +247,7 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                 } else if (this.state.status === VideoPlayStatus.loading) {
                     return this.renderLoading()
                 }
-                const {style, forwardedRef, onEnd, ...rest} = this.props;
+                const {style, forwardedRef, onEnd,onError, ...rest} = this.props;
                 return (
                     <View style={[{backgroundColor: '#000'}, style]}>
                         <VideoPlayer {...rest}
@@ -265,6 +273,10 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                                          } else {
                                              onEnd && onEnd(...args);
                                          }
+                                     }}
+                                     onError={(error)=>{
+                                         RNFetchBlob.fs.unlink(this.localFileFullPath);
+                                         onError && onError(error)
                                      }}
                         />
                         {this._renderPlayButton()}
@@ -293,6 +305,9 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                 this._mount = false;
                 if (this._timer) {
                     clearTimeout(this._timer);
+                }
+                if(this.state.status === VideoPlayStatus.loading){
+                    RNFetchBlob.fs.unlink(this.localFileFullPath);
                 }
             }
         }
