@@ -25,6 +25,7 @@ import {GalleryFileType} from '../config/Types';
 import type {ActionSheetModalButton, ImageListPickerData} from "../config/Types";
 import {SafeAreaView} from 'react-navigation'
 import ActionSheetModal from "./ActionSheetModal";
+import type {PageModalProps} from "./pageModal/PageModal";
 
 const VideoPlayer = withSimpleControl()(Video)
 
@@ -83,6 +84,16 @@ export default class GalleryViewerModal extends React.PureComponent <GalleryView
         this.renderItem = this.renderItem.bind(this)
         this.renderSpinder = this.renderSpinder.bind(this)
     }
+
+    componentWillReceiveProps( nextProps:Readonly<P>, nextContext:any ):void {
+        if(nextProps.initIndex!== this.props.initIndex){
+            this.setState({
+                currentIndex:nextProps.initIndex
+            })
+        }
+    }
+
+
 
     get longPressActions(){
         if(this.props.longPressActions){

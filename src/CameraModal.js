@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     View,
     SafeAreaView,
+    PermissionsAndroid
 } from 'react-native'
 import {RNCamera} from '@ibuild-community/react-native-camera';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -93,8 +94,8 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         buttonRaduis: 40,
         buttonMargin: 5,
         progressWidth: 4,
-        cameraOption:{},
-        videoOption:{}
+        cameraOption: {},
+        videoOption: {}
     }
 
     constructor( props ) {
@@ -186,7 +187,23 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
             if (response !== 'authorized') {
                 this.props.onError && this.props.onError(new Error("请前往“设置”开启您的摄像头和麦克风使用权限"))
             } else {
-                callBack()
+                if (Platform.OS === 'android') {
+                    //申请视频的录音权限
+                    PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, {
+                        title: "申请使用录音权限",
+                        message: "云筑智联需要使用您的录音设备"
+                    }).then(( granted ) => {
+                        if (granted == PermissionsAndroid.RESULTS.GRANTED) {
+                            callBack()
+                        } else {
+                            this.props.onError && this.props.onError(new Error("请前往“设置”开启您的摄像头和麦克风使用权限"))
+                        }
+                    }).catch(() => {
+                        this.props.onError && this.props.onError(new Error("请前往“设置”开启您的摄像头和麦克风使用权限"))
+                    })
+                } else {
+                    callBack()
+                }
             }
         })
     }
@@ -217,7 +234,13 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
     //拍摄照片
     async takePicture() {
         //TODO:fixOrientation:true
-        const options = {exif:false,quality: 1, base64: false, forceUpOrientation: true, fixOrientation: true,...this.props.cameraOption};
+        const options = {
+            exif: false,
+            quality: 1,
+            base64: false,
+            forceUpOrientation: true,
+            fixOrientation: true, ...this.props.cameraOption
+        };
         try {
             const data = await this.camera.takePictureAsync(options);
             const file = {
@@ -270,8 +293,7 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
                 this.startProgressTimer(Date.now())
                 let option = {
                     maxDuration: this.props.maxDur,
-                    //质量设置为480P,否则android会发生crash
-                    quality: RNCamera.Constants.VideoQuality['480p'],
+                    quality: RNCamera.Constants.VideoQuality['720p'],
                     ...this.props.videoOption
                 }
                 if (Platform.OS === "ios") {
@@ -462,16 +484,6 @@ export default class CameraModal extends React.PureComponent<CameraProps> {
         )
     }
 
-    async componentDidMount() {
-        //申请视频的录音权限
-        // try {
-        //     await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, {
-        //         title: "申请使用录音权限",
-        //         message: "云筑智联需要使用您的录音设备"
-        //     });
-        // } catch (ex) {
-        // }
-    }
 }
 
 
