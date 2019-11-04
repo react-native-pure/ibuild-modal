@@ -84,6 +84,9 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                 }
                 this.stop = () => {
                     if (this._mount) {
+                        if(this.state.status === VideoPlayStatus.loading){
+                            RNFetchBlob.fs.unlink(this.localFileFullPath);
+                        }
                         this.setState({
                             status: VideoPlayStatus.stop,
                             showControl: true
@@ -170,6 +173,26 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                 return true
             }
 
+            _onEnd = ( ...args ) => {
+                if (!this.props.repeat) {
+                    this.setState({
+                        status: VideoPlayStatus.stop,
+                        showControl: true
+                    }, () => {
+                        if (this._videoRef) {
+                            this._videoRef.seek(0);
+                        }
+                        this.props.onEnd &&  this.props.onEnd(...args);
+                    });
+                } else {
+                    this.props.onEnd &&  this.props.onEnd(...args);
+                }
+            }
+
+            _onError = ( error ) => {
+                RNFetchBlob.fs.unlink(this.localFileFullPath);
+                this.props.onError &&  this.props.onError(error)
+            }
 
             _renderPlayButton() {
                 if (this.state.showControl) {
@@ -247,7 +270,7 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                 } else if (this.state.status === VideoPlayStatus.loading) {
                     return this.renderLoading()
                 }
-                const {style, forwardedRef, onEnd,onError, ...rest} = this.props;
+                const {style, forwardedRef, ...rest} = this.props;
                 return (
                     <View style={[{backgroundColor: '#000'}, style]}>
                         <VideoPlayer {...rest}
@@ -259,25 +282,8 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                                          this._videoRef = ref;
                                          forwardedRef && forwardedRef(ref)
                                      }}
-                                     onEnd={( ...args ) => {
-                                         if (!this.props.repeat) {
-                                             this.setState({
-                                                 status: VideoPlayStatus.stop,
-                                                 showControl: true
-                                             }, () => {
-                                                 if (this._videoRef) {
-                                                     this._videoRef.seek(0);
-                                                 }
-                                                 onEnd && onEnd(...args);
-                                             });
-                                         } else {
-                                             onEnd && onEnd(...args);
-                                         }
-                                     }}
-                                     onError={(error)=>{
-                                         RNFetchBlob.fs.unlink(this.localFileFullPath);
-                                         onError && onError(error)
-                                     }}
+                                     onEnd={this._onEnd}
+                                     onError={this._onError}
                         />
                         {this._renderPlayButton()}
                     </View>
@@ -306,7 +312,7 @@ export default function ( option:VideoSimpleControlOption = {} ) {
                 if (this._timer) {
                     clearTimeout(this._timer);
                 }
-                if(this.state.status === VideoPlayStatus.loading){
+                if (this.state.status === VideoPlayStatus.loading) {
                     RNFetchBlob.fs.unlink(this.localFileFullPath);
                 }
             }
