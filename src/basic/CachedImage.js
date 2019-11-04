@@ -26,13 +26,24 @@ export default class CachedImage extends React.PureComponent <CachedImageProps>{
 
     componentDidMount() {
         this.props.onLoadStart && this.props.onLoadStart()
-        fetchImage(this.props.source.uri)
-            .then(uri=> {
+        if (this.props.source) {
+            if( /^http/.test(this.props.source.uri)){
+                fetchImage(this.props.source.uri)
+                    .then(uri => {
+                        this.setState({
+                            uri: uri,
+                            showDefaultImage: false
+                        })
+                    })
+            }
+            else{
                 this.setState({
-                    uri:uri,
-                    showDefaultImage:false
+                    uri: this.props.source.uri,
+                    showDefaultImage: false
                 })
-            })
+            }
+
+        }
     }
 
     render() {
@@ -43,7 +54,7 @@ export default class CachedImage extends React.PureComponent <CachedImageProps>{
             };
         }
         else{
-           delete props.source;
+            delete props.source;
         }
         return <Image {...props}/>
     }
