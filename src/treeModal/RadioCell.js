@@ -5,32 +5,31 @@
 
 import React from 'react'
 import {View, TouchableOpacity, StyleSheet, Text,Image} from 'react-native'
-import PropTypes from 'prop-types'
 import {MainBuleColor} from '../../config/DefaultTheme'
 import {TreeSelectorModel} from "../..//config/Enums";
 
-export default class RadioCell extends React.Component {
-    static propTypes = {
-        onCellPress: PropTypes.func,
-        onNextPress: PropTypes.func,
-        onRadioPress: PropTypes.func,
-        text: PropTypes.string.isRequired,
-        style: PropTypes.oneOfType([PropTypes.object, PropTypes.number]),
-        data: PropTypes.object,
-        selected: PropTypes.bool,
-        showRadio: PropTypes.bool,
-        showArrow: PropTypes.bool,
-        textStyle: PropTypes.object,
-        model:PropTypes.string,
 
-    };
-    static defaultProps = {
-        onCellPress: () => null,
-        readOnly: false,
-        value: "",
-        model: TreeSelectorModel.singleSelectToEnd,
-        textStyle: {}
-    };
+type RadioCellProps = {
+    onCellPress?: (item:any)=>void ,
+    onNextPress?: (item:any)=>void ,
+    onRadioPress?:(item:any)=>void ,
+    text: string,
+    style:any ,
+    data: Object,
+    selected: boolean,
+    showRadio: boolean,
+    showArrow: boolean,
+    textStyle: any,
+    model:string,
+}
+
+export default class RadioCell extends React.Component<props:RadioCellProps = {
+    onCellPress: () => null,
+    readOnly: false,
+    value: "",
+    model: TreeSelectorModel.singleSelectToEnd,
+    textStyle: {}
+}> {
 
     constructor(props) {
         super(props)

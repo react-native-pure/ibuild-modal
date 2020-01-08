@@ -24,12 +24,7 @@
   "peerDependencies": {
     "react": ">=16",
     "react-native": ">=0.47",
-    "prop-types": ">=15.5.10",
-    "react-native-vector-icons": "*",
-    "hoist-non-react-statics": "*",
-    "rn-fetch-blob": ">=0.10.15",
     "md5": "*",
-    "deepmerge": ">=2.1.0",
     "react-navigation": ">=3.9.1",
     "immutability-helper": ">=3",
     "object-path": ">=0.11.4",
