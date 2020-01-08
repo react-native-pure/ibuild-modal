@@ -23,13 +23,15 @@ type RadioCellProps = {
     model:string,
 }
 
-export default class RadioCell extends React.Component<props:RadioCellProps = {
-    onCellPress: () => null,
-    readOnly: false,
-    value: "",
-    model: TreeSelectorModel.singleSelectToEnd,
-    textStyle: {}
-}> {
+export default class RadioCell extends React.PureComponent<props> {
+
+    static defaultProps = {
+        onCellPress: () => null,
+        readOnly: false,
+        value: "",
+        model: TreeSelectorModel.singleSelectToEnd,
+        textStyle: {}
+    }
 
     constructor(props) {
         super(props)
