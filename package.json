@@ -25,7 +25,6 @@
     "react": ">=16",
     "react-native": ">=0.47",
     "prop-types": ">=15.5.10",
-    "@ibuild-community/react-native-camera": "*",
     "react-native-vector-icons": "*",
     "hoist-non-react-statics": "*",
     "rn-fetch-blob": ">=0.10.15",
@@ -34,14 +33,7 @@
     "react-navigation": ">=3.9.1",
     "immutability-helper": ">=3",
     "object-path": ">=0.11.4",
-    "react-native-gesture-handler": ">=1.1.0",
-    "@react-native-pure/gallery": "*",
-    "@ibuild-community/react-native-draw": "*",
-    "@ibuild-community/react-native-applet": "*",
-    "@ibuild-community/react-native-share": "*",
-    "@ibuild-community/react-native-wheel-picker": "*",
-    "react-native-video": ">=4.4.1",
-    "react-native-permissions": "*"
+    "react-native-gesture-handler": ">=1.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.3.4",

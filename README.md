@@ -7,13 +7,7 @@ TreeModal | [TreeModalProps](#treemodalprops)| 层级选择modal
 TreeSelector | [TreeSelectorProps](#treeselectorprops) | 层级选择组件 
 PopModal | [PopModalProps](#popmodalprops)| 底部弹出modal组件
 ActionSheetModal | [ActionSheetModalProps](#actionsheetmodalprops)
-CameraModal | [CameraProps](#cameraprops)| 拍照modal,支持拍照和拍摄视频 
-GalleryViewerModal |[GalleryViewerModalProps](#calleryviewermodalprops|  画廊组件，支持视频和图片以及自定义Item
-ImageEditModal |[ImageEditModalProps](#imageeditmodalprops)| 图片编辑
 ListViewModel | [ListViewModelProps](#listviewmodelprops) | 
-QRScanModal | [QRScanModalProps](#qrscanmodalprops)| 二维码扫描
-ShareModal | [ShareModalProps](#sharemodalprops)| 分享
-WheelModal | [WheelModalProps](#wheelmodalprops) | 滚轮选择
 
 ## Install
 
@@ -250,65 +244,6 @@ import update from "immutability-helper";
  - `type`  **$Values<typeof [ImagePickerMediaEnum](#imagepickermediaenum)>** 视频/拍照/视频和拍照
  - `transition?` **$Values<typeof [TransitionType](#transitiontype)>** 
 
-    
-### ImagePickerResult
- - `path` **string** 
- - `width` **number** 
- - `height` **number** 
- - `mime` **string** 
- - `size` **number** 
- - `modificationDate` **string** 
- 
-### ImagePickerMediaEnum
-- `any`: "any"
-- `photo`: "photo"`
-- `video`: "video"
-
-### GalleryViewerModalProps
- - `visible` **boolean** 
- - `onRequestClose` **([ImagePickerResult](#imagepickerresult))=>void** 
- - `onShown?` **()=>void** 
- - `onHidden?` **()=>void** 
- - `data` **Array<[ImageListPickerData](#imagelistpickerdata)>** 
- - `initIndex?` **number**  初始化显示第几张
- - `style?` **Object** 
- - `title?` **string** 
- - `renderFooter?` **(index: number) => React.ReactElement<any>** 
- - `renderHeader?` **(index: number) => React.ReactElement<any>** 
- - `renderIndicator?` **(data: Object, index: number) => React.ReactElement<any>** 
- - `onChange?` **(index: number) => void** 
- - `showIndicator?` **boolean**
- - `transition?` **$Values<typeof [TransitionType](#transitiontype)>** 
-
-
-### ImageListPickerData
-- `url` **String** 图片/视频url地址
-- `type` **$Values< typeof [GalleryFileType](#galleryfiletype)>** 数据源类型
-- `coverImageUrl?` **String** 视频封面图地址
-
-
-### GalleryFileType
-- `other`: -1
-- `image`: 0 图片 
-- `video`: 1  视频
-
-
-### ImageEditModalProps
- - `path` **string** 本地图片地址
- - `sourceType` **$Values < typepf [ImageSourceEnum](#imagesourceenum)>** 本地图片地址
- - `visible` **boolean** 
- - `onRequestClose` **(data: [ImagePickerResult](#imagepickerresult) | null)=>void** 
- - `onShown?` **()=>void** 
- - `onHidden?` **()=>void** 
- - `onPressBack?` **()=>void** 
- - `onError?` **(error: Object)=>void** 
- - `address?` **string** 水印地址
- - `transition?` **$Values<typeof [TransitionType](#transitiontype)>** 
-
-### ImageSourceEnum
-- `none`: "none"
-- `album`: "album" 相册
-- `camera`: "camera"  相机    
 
 ### ListViewModelProps
  - `visible` **boolean** 
@@ -322,64 +257,4 @@ import update from "immutability-helper";
  - `startPageNum?` **number**    
  - `onPageChange?` **(pageIndex:number)=>void**    
         
-### QRScanModalProps
- - `visible` **boolean** 
- - `onRequestClose` **(data:any)=>void** 
- - `onShown?` **()=>void** 
- - `onHidden?` **()=>void** 
- - `transition?` **$Values< typeof [TransitionType](#transitiontype)>** 
- - `renderNavBar？` **() => React.ReactElement<any>** 
- - `barCodeTypes?` **Array<$Values<typeof [QRBarCodeEnum](#qrbarcodeenum)>>**   
 
-
-### QRBarCodeEnum
-
-- `aztec`: "aztec"
-- `code128`: "code128" 
-- `code39`: "code39"   
-- `code39mod43`: "code39mod43"
-- `code93`: "code93"
-- `ean13`: "ean13"
-- `ean8`: "ean8"
-- `pdf417`: "pdf417"
-- `qr`: "qr"
-- `upce`: "upce"
-- `interleaved2of5`: "interleaved2of5"
-- `itf14`: "itf14"
-- `datamatrix`: "datamatrix"
-
-
-### ShareModalProps
- - `visible` **boolean** 
- - `onRequestClose` **(data:any)=>void** 
- - `onShown?` **()=>void** 
- - `onHidden?` **()=>void** 
- - `data` **[ShareData](#sharedata)**
-
-### ShareData
- - `type` **$Values< typeof [ShareDataType](#sharedatatype)>** 
- - `desc` **string**  必填,页面的描述
- - `title` **string**  页面的标题
- - `url` **string**  页面的链接地址
- - `image` **string** 图片地址,可以是本地图片,也可以是远程图片
-
-### ShareDataType
-- `text`:"text"
-- `url`:"url"
-
-### PickerData
- - `key` **string** 
- - `value` **any** 
-
-
-### WheelModalProps
- - `visible` **boolean** 
- - `onRequestClose` **(selectedValue?:any)=>void** 
- - `onShown?` **()=>void** 
- - `onHidden?` **()=>void** 
- - `transition?` **$Values<typeof [TransitionType](#transitiontype)>** 
- - `data` **[PickerData](#pickerdata)** 
- - `fontSize?` **number** 
- - `textOffset` **number** 
- - `selectedIndex` **number** 
- - `onIndexChange?` **(index: number, data: PickerData) => void** 

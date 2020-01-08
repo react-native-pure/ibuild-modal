@@ -1,13 +1,9 @@
 /**
- * @overview 文件描述
+ * @overview types
  * @author heykk
  */
 
 import React from "react";
-import {GalleryFileType} from '@react-native-pure/gallery/src/types';
-
-export {GalleryFileType}
-
 
 export type NavigationBarStyle = {
     title:Object,
@@ -17,31 +13,7 @@ export type NavigationBarStyle = {
 }
 
 
-export type ImageListPickerData = {
-    /**
-     * 图片/视频url地址
-     */
-    url: string,
 
-    /**
-     * 数据源类型
-     */
-    type: $Values<typeof GalleryFileType>,
-
-    /**
-     * 视频封面图地址
-     */
-    coverImageUrl?: string,
-
-    /***
-     * 自定义数据
-     */
-    customData?:any,
-    /***
-     * 自动播放
-     */
-    autoPlay?:boolean
-}
 
 
 export type ModalProps = {
@@ -58,15 +30,7 @@ export type ModalProps = {
     onWillHidden?:()=>void,
 }
 
-export type ImagePickerResult = {
-    path: string;
-    width: number;
-    height: number;
-    mime: string;
-    size: number,
-    modificationDate: string,
-    dur?:number
-};
+
 
 
 /**
