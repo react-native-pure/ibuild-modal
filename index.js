@@ -11,6 +11,7 @@ module.exports = {
     NavigationHeader:require('./src/pageModal/NavigationHeader').default,
     ListViewModel:require("./src/ListViewModel").default,
     ActionSheetModal:require("./src/ActionSheetModal").default,
+    cleanTreeModalStorage:require("./storage/LocalStorage").default.cleanStorage,
     ...require('./config/Enums'),
     ...require('./config/Types'),
 };
