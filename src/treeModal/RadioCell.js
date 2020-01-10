@@ -23,7 +23,7 @@ type RadioCellProps = {
     model:string,
 }
 
-export default class RadioCell extends React.PureComponent<props> {
+export default class RadioCell extends React.PureComponent<RadioCellProps> {
 
     static defaultProps = {
         onCellPress: () => null,
