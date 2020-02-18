@@ -6,7 +6,8 @@
 import React from 'react'
 import {View, TouchableOpacity, StyleSheet, Text,Image} from 'react-native'
 import {MainBuleColor} from '../../config/DefaultTheme'
-import {TreeSelectorModel} from "../..//config/Enums";
+import {TreeSelectorModel} from "../../config/Enums";
+import type {TreeSelectorData} from "../../config/Types";
 
 
 type RadioCellProps = {
@@ -14,7 +15,7 @@ type RadioCellProps = {
     onRadioPress?:(item:any)=>void ,
     text: string,
     style:any ,
-    data: Object,
+    data: TreeSelectorData,
     selected: boolean,
     showRadio: boolean,
     showArrow: boolean,
@@ -28,7 +29,7 @@ export default class RadioCell extends React.PureComponent<RadioCellProps> {
         onCellPress: () => null,
         readOnly: false,
         value: "",
-        model: TreeSelectorModel.singleSelectToEnd,
+        model: TreeSelectorModel.singleSelect,
         textStyle: {}
     }
 

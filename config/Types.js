@@ -17,6 +17,7 @@ export type NavigationBarStyle = {
 
 
 export type ModalProps = {
+
     visible: boolean,
     onRequestClose: (value?: any) => void,
     onShown?:()=>void,
@@ -48,3 +49,11 @@ export type ActionSheetModalButton = {
     /**是否是删除按钮，iOS必须设置**/
     isDelete?:boolean
 };
+
+export type TreeSelectorData = {
+    value:string,
+    key:string, // 一般为sysNo这类唯一值
+    isHistoryPath?:boolean,
+    children?:Array<Data>,
+    haveChildren:boolean
+}

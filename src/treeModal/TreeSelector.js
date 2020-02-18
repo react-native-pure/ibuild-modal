@@ -28,6 +28,7 @@ import RadioCell from './RadioCell';
 import ProjectStorage from "../../storage/LocalStorage";
 import {TreeSelectorModel} from "../../config/Enums";
 import update from "immutability-helper/index";
+import type {TreeSelectorData} from "../../config/Types";
 
 
 const DEVICE_SIZE = Dimensions.get("window");
@@ -37,23 +38,17 @@ const ErrorType = {
     noData: -1
 }
 
-type Data = {
-    value:string,
-    key:string, // 一般为sysNo这类唯一值
-    isHistoryPath?:boolean,
-    children?:Array<Data>,
-    haveChildren:boolean
-}
+
 
 export type TreeSelectorProps = {
     model?:$Values<typeof TreeSelectorModel>, /**选择模式,默认singleSelect**/
-    onSelected?:( currentItem:Object, path:Array<Data> ) => void, /**选中时触发**/
-    onUnSelected?:( currentItem:Object, path:Array<Data> ) => void, /**取消选择时触发**/
-    dataSource:Array<Data>,
-    selectedDataSouce:Array<Data>, /**已选中数据,多选时生效**/
-    loadDataFuc?:( selectedItem:Data )=>Object, /**点击加载子级时触发**/
-    keyExtractor?:( item:Data ) => string, /**数据唯一标识，默认为key**/
-    labelExtractor?:( item:Data ) => string, /**显示文字的key,默认为name**/
+    onSelected?:( currentItem:Object, path:Array<TreeSelectorData> ) => void, /**选中时触发**/
+    onUnSelected?:( currentItem:Object, path:Array<TreeSelectorData> ) => void, /**取消选择时触发**/
+    dataSource:Array<TreeSelectorData>,
+    selectedDataSouce:Array<TreeSelectorData>, /**已选中数据,多选时生效**/
+    loadDataFuc?:( selectedItem:TreeSelectorData )=>Object, /**点击加载子级时触发**/
+    keyExtractor?:( item:TreeSelectorData ) => string, /**数据唯一标识，默认为key**/
+    labelExtractor?:( item:TreeSelectorData ) => string, /**显示文字的key,默认为name**/
     lastSelectedPath?:Array, /**最后选择的全路径，如果提供将自动跳到上次选择的位置**/
     maxLevel?:number, /**页最多显示多少列，超过将按单列现实  type==1时，默认为1；type==0时，默认为10**/
     initLevel?:number, /**初始化显示列 type==1时，默认为0；type==0时，默认为2**/
@@ -100,6 +95,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                 currentSelectPath: !!props.lastSelectedPath ? props.lastSelectedPath : [],
             });
         }
+        
     }
 
     updateState = ( state:ImmutableHelperObject, callback:Function ) => {
@@ -491,9 +487,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
     }
 
     render() {
-        if (this.state.currentSelectPath.length > 0)
-            console.log('this.state.currentSelectPath[this.state.currentSelectPath.length -1].haveChildren = ', this.state.currentSelectPath[this.state.currentSelectPath.length - 1].haveChildren)
-        return (
+       return (
             <View style={[style.flexContainer, this.props.style]}>
                 {!this.props.hiddenNavBar && <View style={style.header}>
                     <ScrollView ref={refs => {
