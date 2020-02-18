@@ -11,7 +11,6 @@ import {TreeSelectorModel} from "../..//config/Enums";
 
 type RadioCellProps = {
     onCellPress?: (item:any)=>void ,
-    onNextPress?: (item:any)=>void ,
     onRadioPress?:(item:any)=>void ,
     text: string,
     style:any ,
@@ -58,8 +57,8 @@ export default class RadioCell extends React.PureComponent<RadioCellProps> {
                                                                paddingLeft: 5,
                                                                paddingVertical: 15
                                                            }}>
-                     <Image style={{width:25,height:25,tintColor: this.props.selected ?this.selectTintColor:this.tintColor}}
-                                                    source={this.props.selected ?require('../../assets/checkbox-blank-circle.png'):require("../../assets/checkbox-blank-circle-outline.png")}/>
+                    <Image style={{width:25,height:25,tintColor: this.props.selected ?this.selectTintColor:this.tintColor}}
+                           source={this.props.selected ?require('../../assets/checkbox-blank-circle.png'):require("../../assets/checkbox-blank-circle-outline.png")}/>
                 </TouchableOpacity>}
                 <TouchableOpacity activeOpacity={1}
                                   style={{
@@ -77,13 +76,7 @@ export default class RadioCell extends React.PureComponent<RadioCellProps> {
                 <View style={{flexDirection: 'row'}}>
                     {this.props.showArrow && <TouchableOpacity activeOpacity={1}
                                                                onPress={() => {
-                                                                   if (this.props.model == TreeSelectorModel.singleSelectAny ||
-                                                                       this.props.model == TreeSelectorModel.multiSelectAny ) {
-                                                                       this.props.onNextPress(this.props.data)
-                                                                   }
-                                                                   else {
-                                                                       this.props.onCellPress(this.props.data)
-                                                                   }
+                                                                   this.props.onCellPress(this.props.data)
                                                                }}
                                                                style={{
                                                                    paddingLeft: 5,
@@ -91,12 +84,6 @@ export default class RadioCell extends React.PureComponent<RadioCellProps> {
                                                                }}>
 
                         <View style={{flexDirection: "row", alignItems: 'center', justifyContent: 'center'}}>
-                            {(this.props.model == TreeSelectorModel.singleSelectAny || this.props.model == TreeSelectorModel.multiSelectAny ) && <View style={{
-                                height: 15,
-                                width: 1.5,
-                                backgroundColor: this.tintColor,
-                                marginRight:8
-                            }}/>}
                             <Image  style={{tintColor:this.tintColor,width:8,height:13,marginTop: 2,marginRight:12}} source={require('../../assets/chevron-right.png')}/>
                         </View>
                     </TouchableOpacity>}

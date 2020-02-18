@@ -8,22 +8,12 @@ export const TreeSelectorModel = {
     /**
      * 多选，只有到最后一级
      */
-    multiSelectToEnd: "multiSelectToEnd",
-
-    /**
-     * 每一级都可以多选
-     */
-    multiSelectAny: "multiSelectAny",
+    multiSelect: "multiSelect",
 
     /**
      * 单选，只有到最后一级
      */
-    singleSelectToEnd: "singleSelectToEnd",
-
-    /**
-     * 每一级都可以单选
-     */
-    singleSelectAny: "singleSelectAny",
+    singleSelect: "singleSelect",
 }
 
 

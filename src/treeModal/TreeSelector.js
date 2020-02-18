@@ -37,46 +37,54 @@ const ErrorType = {
     noData: -1
 }
 
+type Data = {
+    value:string,
+    key:string, // 一般为sysNo这类唯一值
+    isHistoryPath?:boolean,
+    children?:Array<Data>,
+    haveChildren:boolean
+}
+
 export type TreeSelectorProps = {
-    model?: $Values<typeof TreeSelectorModel>,/**选择模式,默认singleSelectToEnd**/
-    onChange?: (currentItem: Object,path:Array<Object>) => void,
-    onSelected?: (currentItem: Object,path:Array<Object>) => void, /**选中时触发**/
-    onUnSelected?: (currentItem: Object,path:Array<Object>) => void, /**取消选择时触发**/
-    dataSource: Array<Object>,
-    selectedDataSouce: Array<Object>,/**已选中数据,多选时生效**/
-    loadDataFuc?:(selectedItem:Object)=>Object, /**点击加载子级时触发**/
-    keyExtractor?:(item: object) => string ,/**数据唯一标识，默认为sysNo**/
-    labelExtractor?:(item: object) => string, /**显示文字的key,默认为name**/
-    lastSelectedPath?: Array,/**最后选择的全路径，如果提供将自动跳到上次选择的位置**/
-    maxLevel?: number,/**页最多显示多少列，超过将按单列现实  type==1时，默认为1；type==0时，默认为10**/
-    initLevel?: number,/**初始化显示列 type==1时，默认为0；type==0时，默认为2**/
-    storageKey: string,/**提供一个字符串key用以保存历史选择数据以实现数据分离，如果不传的将使用默认key对历史选择数据进行保存**/
+    model?:$Values<typeof TreeSelectorModel>, /**选择模式,默认singleSelect**/
+    onSelected?:( currentItem:Object, path:Array<Data> ) => void, /**选中时触发**/
+    onUnSelected?:( currentItem:Object, path:Array<Data> ) => void, /**取消选择时触发**/
+    dataSource:Array<Data>,
+    selectedDataSouce:Array<Data>, /**已选中数据,多选时生效**/
+    loadDataFuc?:( selectedItem:Data )=>Object, /**点击加载子级时触发**/
+    keyExtractor?:( item:Data ) => string, /**数据唯一标识，默认为key**/
+    labelExtractor?:( item:Data ) => string, /**显示文字的key,默认为name**/
+    lastSelectedPath?:Array, /**最后选择的全路径，如果提供将自动跳到上次选择的位置**/
+    maxLevel?:number, /**页最多显示多少列，超过将按单列现实  type==1时，默认为1；type==0时，默认为10**/
+    initLevel?:number, /**初始化显示列 type==1时，默认为0；type==0时，默认为2**/
+    storageKey:string, /**提供一个字符串key用以保存历史选择数据以实现数据分离，如果不传的将使用默认key对历史选择数据进行保存**/
     style?:Object,
-    onError?:(message)=>void,
+    onError?:( message )=>void,
     hiddenHomeIcon?:boolean, /**是否隐藏header上home Icon**/
     homeTitle?:string, /**初始化header 第一个位置的内容**/
-    showFullValue?:boolean,  /**Item内容是否显示全路径**/
+    showFullValue?:boolean, /**Item内容是否显示全路径**/
+    hiddenNavBar?:boolean, /**隐藏顶部导航器，默认false*/
 }
 
 export default class TreeSelector extends Component <TreeSelectorProps> {
 
     static defaultProps = {
         maxLevel: 0,
-        model: TreeSelectorModel.singleSelectToEnd,
+        model: TreeSelectorModel.singleSelect,
         dataSource: [],
         initLevel: 0,
         showFullValue: true,
-        keyExtractor: (data, index) => data.sysNo,
-        labelExtractor: (data, index) => data.name
+        keyExtractor: ( data, index ) => data.key,
+        labelExtractor: ( data, index ) => data.value
     };
 
-    constructor(props) {
+    constructor( props ) {
         super(props);
         this.state = {
             showLoading: false,
             currentSelectPath: !!props.lastSelectedPath ? props.lastSelectedPath : [],
             dataSource: this.dataSouceMapping(props.dataSource),
-       };
+        };
     }
 
     componentDidMount() {
@@ -86,15 +94,15 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         }
     }
 
-    componentWillReceiveProps(props) {
-        if(props.lastSelectedPath !== this.props.lastSelectedPath){
+    componentWillReceiveProps( props ) {
+        if (props.lastSelectedPath !== this.props.lastSelectedPath) {
             this.setState({
                 currentSelectPath: !!props.lastSelectedPath ? props.lastSelectedPath : [],
             });
         }
     }
 
-    updateState = (state: ImmutableHelperObject, callback: Function) => {
+    updateState = ( state:ImmutableHelperObject, callback:Function ) => {
         if (this.state) {
             this.setState(
                 update(this.state, state),
@@ -103,7 +111,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         }
     }
 
-    dataSouceMapping = (data) => {
+    dataSouceMapping = ( data ) => {
         if (!data) {
             return null
         }
@@ -128,7 +136,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         return list;
     }
 
-    arrayCopy(array) {
+    arrayCopy( array ) {
         if (array && Array.isArray(array)) {
             let list = [];
             array.forEach(a => {
@@ -145,7 +153,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
      *
      * @param {props} object
      * */
-    async dealHistoryAsync(props) {
+    async dealHistoryAsync( props ) {
         let datasouce = this.dataSouceMapping(!!props.dataSource ? props.dataSource : [])
         if (props.storageKey) {
             let historyItem = await this.initialHistoryAsync();
@@ -158,12 +166,12 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         }
     }
 
-    findItem(sysNo) {
-        const find = (arr, parents = []) => {
+    findItem( key ) {
+        const find = ( arr, parents = [] ) => {
             let list = this.arrayCopy(arr);
             for (let i = 0; i < list.length; i++) {
                 const item = list[i];
-                if (item.key === sysNo) {
+                if (item.key === key) {
                     return [...parents, item];
                 } else if (item.children) {
                     const nextParents = find(item.children, [...parents, item]);
@@ -194,8 +202,8 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
             /**所有常用数据的sysNo**/
             const itemSysNoes = await ProjectStorage.getItem(key, []);
             let items = []
-            itemSysNoes.forEach((sysNo) => {
-                let item = this.findItem(sysNo);
+            itemSysNoes.forEach(( _key ) => {
+                let item = this.findItem(_key);
                 if (item) {
                     items.push(item)
                 }
@@ -221,14 +229,14 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
     showListTree() {
         if (this.props.maxLevel === 0 || this.props.maxLevel === 1) {
             return false
-        } else if (this.state.currentSelectPath.length < this.props.maxLevel) {
+        } else if (this.state.currentSelectPath.length <= this.props.maxLevel) {
             return true
         } else {
             return false
         }
     }
 
-    async saveLogs(itemSysNo) {
+    async saveLogs( itemSysNo ) {
         const key = this.props.storageKey;
         if (key) {
             const logs = await ProjectStorage.getItem(key, []);
@@ -239,13 +247,13 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         }
     }
 
-    async removeLogs(itemSysNo) {
+    async removeLogs( itemSysNo ) {
         const key = this.props.storageKey;
         if (key) {
             const logs = await ProjectStorage.getItem(key, []);
             const index = logs.indexOf(itemSysNo);
             if (index >= 0) {
-                logs.splice(index,1)
+                logs.splice(index, 1)
                 return ProjectStorage.setItem(key, logs);
             }
         }
@@ -257,35 +265,38 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
      * @param item
      * @param level
      */
-    onCellPress(seletedItem, level) {
+    onCellPress( seletedItem, level ) {
 
-        if(seletedItem.isHistoryPath ||
-            (seletedItem.haveChildren && ( this.props.model === TreeSelectorModel.singleSelectToEnd || this.props.model == TreeSelectorModel.multiSelectToEnd))){
+        if (seletedItem.isHistoryPath || seletedItem.haveChildren) {
             this.onNextPress(seletedItem, level)
         }
-        else{
-            let paths = this.state.currentSelectPath;
-            paths.splice(level, paths.length - level);
 
-            /**多选判断**/
-            if(this.props.model === TreeSelectorModel.multiSelectAny || this.props.model == TreeSelectorModel.multiSelectToEnd){
-                if (this.isSelected(seletedItem)) {
-                    this.removeLogs(seletedItem.key)
-                    this.props.onUnSelected(seletedItem.data, paths)
+        /***
+         * 处理类别等
+         */
+        let paths = this.state.currentSelectPath;
+        paths.splice(level, paths.length - level);
+        paths = paths.concat([seletedItem]);
 
-                } else {
-                    this.saveLogs(seletedItem.key)
-                    this.props.onSelected(seletedItem.data, paths)
-                }
-            }
-            /**单选到底模式判断**/
-            else if(seletedItem.haveChildren && this.props.model === TreeSelectorModel.singleSelectToEnd){
-                this.onNextPress(seletedItem, level)
-            }
-            else{
+        this.updateState({
+            currentSelectPath: {$push: [seletedItem]}
+        })
+
+        /**多选判断**/
+        if (this.props.model === TreeSelectorModel.multiSelect) {
+            if (this.isSelected(seletedItem)) {
+                this.removeLogs(seletedItem.key)
+                this.props.onUnSelected(seletedItem.data, paths)
+
+            } else {
                 this.saveLogs(seletedItem.key)
                 this.props.onSelected(seletedItem.data, paths)
             }
+        }
+        /**单选模式判断**/
+        else {
+            this.saveLogs(seletedItem.key)
+            this.props.onSelected(seletedItem.data, paths)
         }
     }
 
@@ -294,13 +305,14 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
      * @param selecteItem
      * @param level
      */
-    async onNextPress(selecteItem, level, callBack) {
-        if (!selecteItem) {
-            this.setState({currentSelectPath: []}, () => {
-                this.props.onChange && this.props.onChange(null, null)
-            })
-            return
-        }
+    async onNextPress( selecteItem, level, callBack ) {
+        // if (!selecteItem) {
+        //     this.setState({currentSelectPath: []}, () => {
+        //         this.props.onChange && this.props.onChange(null, null)
+        //     })
+        //     return
+        // }
+
         if (selecteItem.isHistoryPath && (!selecteItem.children || selecteItem.children.length === 0)) {
             if (this.props.onError) {
                 this.props.onError(ErrorType.noData)
@@ -328,16 +340,15 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
             setTimeout(() => {
                 this.headerScrollView && this.headerScrollView.scrollToEnd()
             }, 1)
-            this.props.onChange && this.props.onChange(selecteItem.data, this.state.currentSelectPath)
             callBack && callBack()
         })
     }
 
 
-    isSelected(seletedItem) {
+    isSelected( seletedItem ) {
 
         let list = this.dataSouceMapping(this.props.selectedDataSouce)
-        if (list && list.length>0) {
+        if (list && list.length > 0) {
             for (let i = 0; i < list.length; i++) {
                 let item = list[i];
                 if (item.key === seletedItem.key && seletedItem.value === item.value) {
@@ -348,7 +359,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         return false
     }
 
-    mappingSectionData(data) {
+    mappingSectionData( data ) {
 
         if (!data) {
             return []
@@ -378,7 +389,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         return list;
     }
 
-    renderHeader(data) {
+    renderHeader( data ) {
         if (data.section.key != 'undefined') {
             return <View style={style.section}>
                 <Text style={[{color: '#b5b5b5', fontSize: 12}]}>{data.section.key}</Text>
@@ -394,7 +405,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
      * @param {data}        object
      * @param {selecteItem} number  当前行的层级数
      * */
-    renderListView(data, level) {
+    renderListView( data, level ) {
 
         let r = 255;
         r = r - level * 5;
@@ -424,15 +435,12 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                 borderRightWidth: StyleSheet.hairlineWidth,
                 borderRightColor: '#e6e6e6'
             }}
-            renderItem={({item}) => {
+            renderItem={( {item} ) => {
                 return <RadioCell
                     model={this.props.model}
                     style={((this.state.currentSelectPath.length > level && item.key === this.state.currentSelectPath[level].key) ? selecteItemStyle : unSelecteItemSytle)}
                     onCellPress={() => {
                         this.onCellPress(item, level)
-                    }}
-                    onNextPress={() => {
-                        this.onNextPress(item, level, null)
                     }}
                     onRadioPress={() => {
                         this.onCellPress(item, level)
@@ -440,7 +448,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                     text={(this.props.showFullValue && !!item.fullValue) ? item.fullValue : item.value}
                     data={item}
                     selected={this.isSelected(item)}
-                    showRadio={!!(((!item.haveChildren && this.props.model === TreeSelectorModel.multiSelectToEnd) || this.props.model === TreeSelectorModel.multiSelectAny) && !item.isHistoryPath)}
+                    showRadio={!!((!item.haveChildren && this.props.model === TreeSelectorModel.multiSelect) && !item.isHistoryPath)}
                     showArrow={!!item.haveChildren}/>
             }}/>
 
@@ -453,14 +461,14 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
      * @param {data}        object
      * @param {selecteItem} number  当前行的层级数
      * */
-    renderSingleListView(data, level) {
+    renderSingleListView( data, level ) {
         return <SectionList
             key={level}
             showsVerticalScrollIndicator={false}
             sections={this.mappingSectionData(data)}
             renderSectionHeader={this.renderHeader.bind(this)}
             style={{flex: 1, backgroundColor: '#fff'}}
-            renderItem={({item}) => {
+            renderItem={( {item} ) => {
                 return <RadioCell
                     model={this.props.model}
                     style={{
@@ -471,24 +479,23 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                     onCellPress={() => {
                         this.onCellPress(item, level)
                     }}
-                    onNextPress={() => {
-                        this.onNextPress(item, level, null)
-                    }}
                     onRadioPress={() => {
                         this.onCellPress(item, level)
                     }}
                     text={!!item.fullValue ? item.fullValue : item.value}
                     data={item}
                     selected={this.isSelected(item)}
-                    showRadio={!!(((!item.haveChildren && this.props.model === TreeSelectorModel.multiSelectToEnd) || this.props.model === TreeSelectorModel.multiSelectAny) && !item.isHistoryPath)}
+                    showRadio={!!((!item.haveChildren && this.props.model === TreeSelectorModel.multiSelect) && !item.isHistoryPath)}
                     showArrow={!!item.haveChildren}/>
             }}/>
     }
 
     render() {
+        if (this.state.currentSelectPath.length > 0)
+            console.log('this.state.currentSelectPath[this.state.currentSelectPath.length -1].haveChildren = ', this.state.currentSelectPath[this.state.currentSelectPath.length - 1].haveChildren)
         return (
             <View style={[style.flexContainer, this.props.style]}>
-                <View style={style.header}>
+                {!this.props.hiddenNavBar && <View style={style.header}>
                     <ScrollView ref={refs => {
                         this.headerScrollView = refs;
                     }}
@@ -515,7 +522,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                             {this.state.currentSelectPath && this.state.currentSelectPath.length > 0 &&
                             <Image style={style.arrow} source={require('../../assets/chevron-right.png')}/>}
                         </TouchableOpacity>
-                        {this.state.currentSelectPath.map((item, index) => {
+                        {this.state.currentSelectPath.map(( item, index ) => {
                             return <TouchableOpacity key={index}
                                                      onPress={() => {
                                                          this.onNextPress(item, index)
@@ -531,18 +538,12 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                             </TouchableOpacity>
                         })}
                     </ScrollView>
-                </View>
+                </View>}
 
                 {/**多列表**/}
                 {this.showListTree() && this.state.dataSource.length > 0 && <View style={style.listTreeBox}>
                     {this.state.currentSelectPath.length <= this.props.initLevel && this.renderListView(this.state.dataSource, 0)}
-                    {this.state.currentSelectPath.length > 0 && this.props.initLevel <= this.state.currentSelectPath.length && this.state.currentSelectPath.map((item, index) => {
-                        if (index >= this.state.currentSelectPath.length - this.props.initLevel - 1) {
-                            return this.renderListView(item.children, index + 1)
-                        }
-                    })
-                    }
-                    {!!this.props.initLevel && this.props.initLevel > this.state.currentSelectPath.length && Array.apply(null, {length: this.props.initLevel - 1}).map((i, index) => {
+                    {!!this.props.initLevel && Array.apply(null, {length: this.props.initLevel - 1}).map(( i, index ) => {
                         let item = {children: []};
                         if (index < this.state.currentSelectPath.length) {
                             item = this.state.currentSelectPath[index]
@@ -555,7 +556,9 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                 {/**单列表**/}
                 {!this.showListTree() && this.state.dataSource.length > 0 && <View style={{flex: 1}}>
                     {(!this.state.currentSelectPath || this.state.currentSelectPath.length === 0) && this.renderSingleListView(this.state.dataSource, 0)}
-                    {(!!this.state.currentSelectPath && this.state.currentSelectPath.length > 0) && this.renderSingleListView(this.state.currentSelectPath[this.state.currentSelectPath.length - 1].children, this.state.currentSelectPath.length)}
+                    {(!!this.state.currentSelectPath && this.state.currentSelectPath.length > 0 && this.state.currentSelectPath[this.state.currentSelectPath.length - 1].haveChildren) && this.renderSingleListView(this.state.currentSelectPath[this.state.currentSelectPath.length - 1].children, this.state.currentSelectPath.length)}
+                    {(!!this.state.currentSelectPath && this.state.currentSelectPath.length > 1 && !this.state.currentSelectPath[this.state.currentSelectPath.length - 1].haveChildren) && this.renderSingleListView(this.state.currentSelectPath[this.state.currentSelectPath.length - 2].children, this.state.currentSelectPath.length - 1)}
+
                 </View>}
 
                 {this.state.showLoading && <View style={style.loading}>
