@@ -3,10 +3,11 @@
  * @author heykk
  */
 
-import React, {PureComponent} from "react"
+import React, {PureComponent,useMemo} from "react"
 import {View, Text, StyleSheet, TouchableWithoutFeedback, Platform, Image,SafeAreaView} from "react-native"
 import {get as getPath} from "object-path";
 import type {NavigationBarStyle} from "../../config/Types";
+import {useSafeArea} from "react-native-safe-area-context";
 
 export type NavigationHeaderProps = {
     navbarStyle?:NavigationBarStyle,
@@ -19,78 +20,74 @@ export type NavigationHeaderProps = {
     renderRight?:() => React.ReactElement< any >
 }
 
-export default class NavigationHeader extends PureComponent<NavigationHeaderProps> {
+function NavigationHeader(props: NavigationHeaderProps ) {
+    const {hiddenLeft=false,hiddenRight = false,title="",renderLeft,onPressLeft,navbarStyle,renderRight,onPressRight} = props;
+    const inset = useSafeArea()
 
-    static defaultProps = {
-        hiddenLeft:false,
-        hiddenRight:false,
-        title:"",
-    }
-
-
-
-    _renderLeftButton = ()=>{
-        if(this.props.hiddenLeft){
+    const renderLeftButton = ()=>{
+        if(hiddenLeft){
             return  <View style={styles.leftButton}/>
         }
-        if(this.props.renderLeft){
-            return this.props.renderLeft()
+        if(renderLeft){
+            return renderLeft()
         }
         return (
             <TouchableWithoutFeedback onPress={() => {
-                this.props.onPressLeft && this.props.onPressLeft()
+                onPressLeft && onPressLeft()
             }}>
                 <View style={[styles.leftButton]}>
-                    <Image style={[styles.leftButtonImage,getPath(this.props.navbarStyle,"leftButton",null)]}
+                    <Image style={[styles.leftButtonImage,getPath(props.navbarStyle,"leftButton",null)]}
                            source={require("../../assets/back-icon/back-icon.png")}></Image>
                 </View>
             </TouchableWithoutFeedback>
         )
     }
 
-    _renderTitle = ()=>{
-        return <Text style={[styles.title,getPath(this.props.navbarStyle,"title",null)]}>{this.props.title}</Text>
+    const renderTitle = ()=>{
+        return <Text style={[styles.title,getPath(navbarStyle,"title",null)]}>{title}</Text>
     }
 
-    _renderRightButton = ()=>{
-        if(this.props.hiddenRight){
+    const renderRightButton = ()=>{
+        if(hiddenRight){
             return  <View style={styles.rightButton}/>
         }
-        if(this.props.renderRight){
-            return this.props.renderRight()
+        if(renderRight){
+            return renderRight()
         }
         return (
             <TouchableWithoutFeedback onPress={() => {
-                this.props.onPressRight && this.props.onPressRight()
+                onPressRight && onPressRight()
             }}>
                 <View style={styles.rightButton}>
-                    <Text style={[ styles.rightButtonText,getPath(this.props.navbarStyle,"rightButton",null)]}>完成</Text>
+                    <Text style={[ styles.rightButtonText,getPath(navbarStyle,"rightButton",null)]}>完成</Text>
                 </View>
             </TouchableWithoutFeedback>
         )
     }
 
-    get backgroundColor(){
+    const backgroundColor = useMemo(()=>{
 
-        const container = StyleSheet.flatten(getPath(this.props.navbarStyle,"container",{}));
+        const container = StyleSheet.flatten(getPath(navbarStyle,"container",{}));
         if(container.backgroundColor){
             return container.backgroundColor
         }
         else{
             return "#fff"
         }
-    }
+    },[navbarStyle])
 
-    render(){
-        return(<SafeAreaView style={{backgroundColor: this.backgroundColor}}>
-            <View style={[styles.container,{backgroundColor:this.backgroundColor},getPath(this.props.navbarStyle,"container",null)]}>
-            {this._renderLeftButton()}
-            {this._renderTitle()}
-            {this._renderRightButton()}
-            </View>
-        </SafeAreaView>)
-    }
+    return(<View style={{backgroundColor: backgroundColor,paddingTop:inset.top}}>
+        <View style={[styles.container,{backgroundColor:backgroundColor},getPath(navbarStyle,"container",null)]}>
+            {renderLeftButton()}
+            {renderTitle()}
+            {renderRightButton()}
+        </View>
+    </View>)
+
 }
+
+export default React.memo(NavigationHeader)
+
 
 const  styles = StyleSheet.create({
     container:{
@@ -104,7 +101,7 @@ const  styles = StyleSheet.create({
         }),
         alignItems: 'center',
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
     },
     title:{
         color: "#3C4348",
