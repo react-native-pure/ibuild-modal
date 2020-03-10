@@ -95,7 +95,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                 currentSelectPath: !!props.lastSelectedPath ? props.lastSelectedPath : [],
             });
         }
-        
+
     }
 
     updateState = ( state:ImmutableHelperObject, callback:Function ) => {
@@ -262,7 +262,6 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
      * @param level
      */
     onCellPress( seletedItem, level ) {
-
         if (seletedItem.isHistoryPath || seletedItem.haveChildren) {
             this.onNextPress(seletedItem, level)
         }
@@ -309,7 +308,8 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         //     return
         // }
 
-        if (selecteItem.isHistoryPath && (!selecteItem.children || selecteItem.children.length === 0)) {
+
+        if (selecteItem.isHistoryPath && !selecteItem.haveChildren) {
             if (this.props.onError) {
                 this.props.onError(ErrorType.noData)
             } else {
@@ -319,7 +319,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         }
         let updateState = {}
         /**需要下载数据**/
-        if (!!this.props.loadDataFuc && !selecteItem.children) {
+        if (!!this.props.loadDataFuc && selecteItem.children.length===0) {
             this.setState({
                 showLoading: true
             })
@@ -487,7 +487,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
     }
 
     render() {
-       return (
+        return (
             <View style={[style.flexContainer, this.props.style]}>
                 {!this.props.hiddenNavBar && <View style={style.header}>
                     <ScrollView ref={refs => {
