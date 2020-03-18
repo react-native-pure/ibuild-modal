@@ -39,7 +39,6 @@ const ErrorType = {
 }
 
 
-
 export type TreeSelectorProps = {
     model?:$Values<typeof TreeSelectorModel>, /**选择模式,默认singleSelect**/
     onSelected?:( currentItem:Object, path:Array<TreeSelectorData> ) => void, /**选中时触发**/
@@ -319,7 +318,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         }
         let updateState = {}
         /**需要下载数据**/
-        if (!!this.props.loadDataFuc && selecteItem.children.length===0) {
+        if (!!this.props.loadDataFuc && selecteItem.children.length === 0) {
             this.setState({
                 showLoading: true
             })
@@ -401,7 +400,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
      * @param {data}        object
      * @param {selecteItem} number  当前行的层级数
      * */
-    renderListView( data, level ) {
+    renderListView( data, level, parentKey = '' ) {
 
         let r = 255;
         r = r - level * 5;
@@ -421,7 +420,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
         }
 
         return <SectionList
-            key={level}
+            key={`${level}_${parentKey}`}
             showsVerticalScrollIndicator={false}
             sections={this.mappingSectionData(data)}
             renderSectionHeader={this.renderHeader.bind(this)}
@@ -433,6 +432,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
             }}
             renderItem={( {item} ) => {
                 return <RadioCell
+                    key={item.key}
                     model={this.props.model}
                     style={((this.state.currentSelectPath.length > level && item.key === this.state.currentSelectPath[level].key) ? selecteItemStyle : unSelecteItemSytle)}
                     onCellPress={() => {
@@ -457,9 +457,9 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
      * @param {data}        object
      * @param {selecteItem} number  当前行的层级数
      * */
-    renderSingleListView( data, level ) {
+    renderSingleListView( data, level, parentKey = '' ) {
         return <SectionList
-            key={level}
+            key={`${level}_${parentKey}`}
             showsVerticalScrollIndicator={false}
             sections={this.mappingSectionData(data)}
             renderSectionHeader={this.renderHeader.bind(this)}
@@ -542,7 +542,7 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                         if (index < this.state.currentSelectPath.length) {
                             item = this.state.currentSelectPath[index]
                         }
-                        return this.renderListView(item.children, index + 1)
+                        return this.renderListView(item.children, index + 1, item.key)
                     })}
 
                 </View>}
@@ -550,8 +550,8 @@ export default class TreeSelector extends Component <TreeSelectorProps> {
                 {/**单列表**/}
                 {!this.showListTree() && this.state.dataSource.length > 0 && <View style={{flex: 1}}>
                     {(!this.state.currentSelectPath || this.state.currentSelectPath.length === 0) && this.renderSingleListView(this.state.dataSource, 0)}
-                    {(!!this.state.currentSelectPath && this.state.currentSelectPath.length > 0 && this.state.currentSelectPath[this.state.currentSelectPath.length - 1].haveChildren) && this.renderSingleListView(this.state.currentSelectPath[this.state.currentSelectPath.length - 1].children, this.state.currentSelectPath.length)}
-                    {(!!this.state.currentSelectPath && this.state.currentSelectPath.length > 1 && !this.state.currentSelectPath[this.state.currentSelectPath.length - 1].haveChildren) && this.renderSingleListView(this.state.currentSelectPath[this.state.currentSelectPath.length - 2].children, this.state.currentSelectPath.length - 1)}
+                    {(!!this.state.currentSelectPath && this.state.currentSelectPath.length > 0 && this.state.currentSelectPath[this.state.currentSelectPath.length - 1].haveChildren) && this.renderSingleListView(this.state.currentSelectPath[this.state.currentSelectPath.length - 1].children, this.state.currentSelectPath.length, this.state.currentSelectPath[this.state.currentSelectPath.length - 1].key)}
+                    {(!!this.state.currentSelectPath && this.state.currentSelectPath.length > 1 && !this.state.currentSelectPath[this.state.currentSelectPath.length - 1].haveChildren) && this.renderSingleListView(this.state.currentSelectPath[this.state.currentSelectPath.length - 2].children, this.state.currentSelectPath.length - 1, this.state.currentSelectPath[this.state.currentSelectPath.length - 2].key)}
 
                 </View>}
 
