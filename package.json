@@ -43,7 +43,7 @@
     "react-native": ">=0.47",
     "react-native-testing-library": "^1.6.1",
     "react-test-renderer": "16.8.3",
-    "semantic-release": "^15.13.3"
+    "semantic-release": "^17.2.3"
   },
   "dependencies": {},
   "config": {
